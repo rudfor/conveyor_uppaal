@@ -328,7 +328,7 @@ and temp_c &gt;= c_min</label>
 			<source ref="id6"/>
 			<target ref="id6"/>
 			<nail x="-170" y="-42"/>
-			<nail x="-170" y="68"/>
+			<nail x="-170" y="17"/>
 		</transition>
 		<transition>
 			<source ref="id11"/>
