@@ -10,7 +10,8 @@ bool dis_on; //is the distribution belt on or off
 bool feed_on[2]; //array of the boolean for each of the feed belts
 
 
-chan dis_start, dis_stop, feed_off_belt, feed_on_belt, dis_forward, dis_back; //chanels to start, stop and change the direction of the belts
+chan dis_start, dis_stop, dis_forward, dis_back; // chanels to start, stop and change direction of the distribution belt
+chan feed_off_[2], feed_on_[2] ; //chanels to start and stop the two feed belts
 
 chan Init, checkin0, checkin1, colorT, colorF; //used by the user to set the bags on the feed
 
@@ -23,7 +24,7 @@ typedef int[0, nm_bags-1] t_id;
 //chan fwd_sync, fwd_sync_n;</declaration>
 	<template>
 		<name>FeedBelt_motor</name>
-		<parameter>const int [0,1] belt</parameter>
+		<parameter>const int[0,1] belt</parameter>
 		<location id="id0" x="0" y="8">
 			<committed/>
 		</location>
@@ -37,7 +38,7 @@ typedef int[0, nm_bags-1] t_id;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="-110" y="169">feed_on_belt?</label>
+			<label kind="synchronisation" x="-110" y="169">feed_on_[belt]?</label>
 			<label kind="assignment" x="-110" y="186">feed_on[belt]:= true</label>
 			<nail x="-101" y="169"/>
 			<nail x="-42" y="169"/>
@@ -45,14 +46,14 @@ typedef int[0, nm_bags-1] t_id;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id2"/>
-			<label kind="synchronisation" x="-263" y="153">feed_off_belt?</label>
+			<label kind="synchronisation" x="-263" y="153">feed_off_[belt]?</label>
 			<nail x="-170" y="136"/>
 			<nail x="-170" y="170"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="synchronisation" x="-118" y="59">feed_off_belt?</label>
+			<label kind="synchronisation" x="-118" y="59">feed_off_[belt]?</label>
 			<label kind="assignment" x="-110" y="76">feed_on[belt]:= false</label>
 			<nail x="-42" y="101"/>
 			<nail x="-101" y="101"/>
@@ -60,63 +61,79 @@ typedef int[0, nm_bags-1] t_id;
 		<transition>
 			<source ref="id1"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="42" y="144">feed_on_belt?</label>
+			<label kind="synchronisation" x="42" y="144">feed_on_[belt]?</label>
 			<nail x="34" y="170"/>
 			<nail x="34" y="136"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="9" y="33">feed_on_belt?</label>
+			<label kind="synchronisation" x="9" y="33">feed_on_[belt]?</label>
 			<label kind="assignment" x="9" y="50">feed_on[belt]:= true</label>
 		</transition>
 	</template>
 	<template>
 		<name>Controler_monkey</name>
+		<declaration>const int [0,1] belt0 =0;
+const int [0,1] belt1 =1;</declaration>
 		<location id="id3" x="0" y="-34">
 		</location>
 		<init ref="id3"/>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="93" y="34">dis_forward!</label>
-			<nail x="85" y="59"/>
-			<nail x="102" y="25"/>
+			<label kind="synchronisation" x="-204" y="-127">feed_on_[belt1]!</label>
+			<nail x="-102" y="-102"/>
+			<nail x="-102" y="-136"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="42" y="85">dis_back!</label>
-			<nail x="51" y="85"/>
-			<nail x="85" y="68"/>
+			<label kind="synchronisation" x="-204" y="-59">feed_off_[belt1]!</label>
+			<nail x="-102" y="-68"/>
+			<nail x="-102" y="-34"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-195" y="25">feed_on_belt!</label>
-			<nail x="-110" y="17"/>
-			<nail x="-93" y="42"/>
+			<label kind="synchronisation" x="110" y="8">dis_forward!</label>
+			<nail x="102" y="34"/>
+			<nail x="102" y="-1"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-144" y="76">feed_off_belt!</label>
-			<nail x="-85" y="51"/>
-			<nail x="-59" y="76"/>
+			<label kind="synchronisation" x="59" y="34">dis_back!</label>
+			<nail x="51" y="34"/>
+			<nail x="85" y="34"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-34" y="85">dis_stop!</label>
-			<nail x="-17" y="85"/>
-			<nail x="34" y="85"/>
+			<label kind="synchronisation" x="-204" y="8">feed_on_[belt0]!</label>
+			<nail x="-102" y="0"/>
+			<nail x="-102" y="34"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="119" y="-25">dis_start!</label>
-			<nail x="102" y="17"/>
+			<label kind="synchronisation" x="-127" y="34">feed_off_[belt0]!</label>
+			<nail x="-85" y="34"/>
+			<nail x="-51" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-17" y="34">dis_stop!</label>
+			<nail x="-17" y="34"/>
+			<nail x="17" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="119" y="-76">dis_start!</label>
 			<nail x="102" y="-34"/>
+			<nail x="102" y="-68"/>
 		</transition>
 	</template>
 	<template>
@@ -374,14 +391,14 @@ and temp_c &gt;= c_min</label>
 			<source ref="id9"/>
 			<target ref="id10"/>
 			<label kind="synchronisation" x="-382" y="-357">checkin0?</label>
-			<label kind="assignment" x="-382" y="-340">feedBelt = 1</label>
+			<label kind="assignment" x="-382" y="-340">feedBelt = 0</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id6"/>
 			<label kind="guard" x="-280" y="-323">false</label>
 			<label kind="synchronisation" x="-195" y="-357">checkin1?</label>
-			<label kind="assignment" x="-195" y="-340">feedBelt = 2</label>
+			<label kind="assignment" x="-195" y="-340">feedBelt = 1</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
@@ -589,7 +606,11 @@ system  Controler_monkey , FeedBelt0, FeedBelt1, DisBelt_motor, User, Bag;</syst
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (forall(i:t_id) Bag(i).Finish)</formula>
+			<formula>E&lt;&gt; Bag(1).Finish</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; forall(i:t_id) Bag(i).Finish</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -601,11 +622,15 @@ system  Controler_monkey , FeedBelt0, FeedBelt1, DisBelt_motor, User, Bag;</syst
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Bag1.Destination_A and Bag1.x &gt;=79)</formula>
+			<formula>E&lt;&gt; (Bag(1).Destination_A and Bag(1).x &gt;=79)</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A&lt;&gt; (Bag(1).Destination_A || Bag(1).Destination_B )</formula>
+			<formula>E&lt;&gt; (Bag(1).Destination_A || Bag(1).Destination_B )</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Bag(0).Destination_A --&gt; Bag(0).Finish</formula>
 			<comment></comment>
 		</query>
 	</queries>
