@@ -371,7 +371,7 @@ x:=0</label>
 			<source ref="id23"/>
 			<target ref="id24"/>
 			<label kind="guard" x="-501" y="-68">feed_on[0] and x==active_sensor_time</label>
-			<label kind="assignment" x="-501" y="-51">fb0_Sensor := color,
+			<label kind="assignment" x="-501" y="-51">fb0_Sensor := BLOCKED,
 x:=0</label>
 		</transition>
 		<transition>
@@ -434,14 +434,16 @@ and temp_c &gt;= e_min</label>
 			<target ref="id16"/>
 			<label kind="guard" x="68" y="399">not fwd and dis_on
 and x &gt;= c_min</label>
-			<label kind="assignment" x="68" y="433">temp_c := 0</label>
+			<label kind="assignment" x="68" y="433">temp_c := 0,
+collision[1]--</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id18"/>
 			<label kind="guard" x="-195" y="391">fwd and dis_on
 and x &gt;= c_min</label>
-			<label kind="assignment" x="-195" y="425">temp_c :=0</label>
+			<label kind="assignment" x="-195" y="425">temp_c :=0,
+collision[1]--</label>
 		</transition>
 		<transition>
 			<source ref="id17"/>
@@ -469,7 +471,6 @@ collision[0]--</label>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id9"/>
-			<label kind="guard" x="-212" y="-365">false</label>
 			<label kind="synchronisation" x="-127" y="-365">checkin1?</label>
 			<label kind="assignment" x="-127" y="-340">feedBelt = 1</label>
 			<nail x="-34" y="-340"/>
