@@ -2,20 +2,28 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-int speed_belt =20;
-bool fwd, dis_on, feed_on;
-chan Init, dis_start, dis_stop, feed_off_belt, feed_on_belt, dis_forward, dis_back, checkin1, checkin2, colorT, colorF;
+//int speed_belt =20;
+int BagsOnFeed[2];
 
-chan stop_feed;
+bool fwd; //direction of the distribution belt
+bool dis_on; //is the distribution belt on or off
+bool feed_on[2]; //array of the boolean for each of the feed belts
+
+
+chan dis_start, dis_stop, feed_off_belt, feed_on_belt, dis_forward, dis_back; //chanels to start, stop and change the direction of the belts
+
+chan Init, checkin0, checkin1, colorT, colorF; //used by the user to set the bags on the feed
+
+urgent chan stop_feed;
 
 const int nm_bags = 2;
-typedef int[1, nm_bags] t_id;
+typedef int[0, nm_bags-1] t_id;
 
-chan do_c, do_e;
-chan fwd_sync, fwd_sync_n;</declaration>
+//chan do_c, do_e;
+//chan fwd_sync, fwd_sync_n;</declaration>
 	<template>
 		<name>FeedBelt_motor</name>
-		<parameter>const int [1,2] belt</parameter>
+		<parameter>const int [0,1] belt</parameter>
 		<location id="id0" x="0" y="8">
 			<committed/>
 		</location>
@@ -30,7 +38,7 @@ chan fwd_sync, fwd_sync_n;</declaration>
 			<source ref="id2"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="-110" y="169">feed_on_belt?</label>
-			<label kind="assignment" x="-110" y="186">feed_on:= true</label>
+			<label kind="assignment" x="-110" y="186">feed_on[belt]:= true</label>
 			<nail x="-101" y="169"/>
 			<nail x="-42" y="169"/>
 		</transition>
@@ -45,7 +53,7 @@ chan fwd_sync, fwd_sync_n;</declaration>
 			<source ref="id1"/>
 			<target ref="id2"/>
 			<label kind="synchronisation" x="-118" y="59">feed_off_belt?</label>
-			<label kind="assignment" x="-110" y="76">feed_on:= false</label>
+			<label kind="assignment" x="-110" y="76">feed_on[belt]:= false</label>
 			<nail x="-42" y="101"/>
 			<nail x="-101" y="101"/>
 		</transition>
@@ -60,7 +68,7 @@ chan fwd_sync, fwd_sync_n;</declaration>
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="9" y="33">feed_on_belt?</label>
-			<label kind="assignment" x="9" y="50">feed_on:= true</label>
+			<label kind="assignment" x="9" y="50">feed_on[belt]:= true</label>
 		</transition>
 	</template>
 	<template>
@@ -135,6 +143,7 @@ int f_max = 31;
 
 </declaration>
 		<location id="id4" x="-272" y="-502">
+			<committed/>
 		</location>
 		<location id="id5" x="204" y="204">
 			<name x="153" y="170">Destination_B</name>
@@ -224,6 +233,7 @@ int f_max = 31;
 			<label kind="invariant" x="-85" y="-170">x&lt;=sensor_section_main</label>
 		</location>
 		<location id="id28" x="-272" y="-544">
+			<name x="-282" y="-578">Finish</name>
 			<committed/>
 		</location>
 		<init ref="id4"/>
@@ -244,50 +254,50 @@ int f_max = 31;
 		<transition>
 			<source ref="id24"/>
 			<target ref="id16"/>
-			<label kind="guard" x="-93" y="51">dis_on and feed_on</label>
+			<label kind="guard" x="-93" y="51">dis_on and feed_on[1]</label>
 			<label kind="assignment" x="-93" y="68">temp_c :=0</label>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id26"/>
-			<label kind="guard" x="-93" y="-289">feed_on</label>
+			<label kind="guard" x="-93" y="-289">feed_on[1]</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id14"/>
-			<label kind="guard" x="-433" y="51">dis_on and feed_on</label>
+			<label kind="guard" x="-433" y="51">dis_on and feed_on[0]</label>
 			<label kind="assignment" x="-442" y="68">temp_c:=0</label>
 		</transition>
 		<transition>
 			<source ref="id22"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-433" y="-8">feed_on and temp_c== b</label>
+			<label kind="guard" x="-433" y="-8">feed_on[0] and temp_c== b</label>
 		</transition>
 		<transition>
 			<source ref="id21"/>
 			<target ref="id22"/>
-			<label kind="guard" x="-433" y="-85">feed_on and x==sensor_section_3</label>
+			<label kind="guard" x="-433" y="-85">feed_on[0] and x==sensor_section_3</label>
 			<label kind="assignment" x="-425" y="-68">temp_c := 0</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id19"/>
-			<label kind="guard" x="-425" y="-289">feed_on</label>
+			<label kind="guard" x="-425" y="-289">feed_on[0]</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id21"/>
-			<label kind="guard" x="-425" y="-153">feed_on and x==sensor_section_main</label>
+			<label kind="guard" x="-425" y="-153">feed_on[0] and x==sensor_section_main</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id20"/>
-			<label kind="guard" x="-433" y="-221">feed_on and x==sensor_section_1</label>
+			<label kind="guard" x="-433" y="-221">feed_on[0] and x==sensor_section_1</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-663" y="9">not dis_on or not feed_on</label>
+			<label kind="guard" x="-663" y="9">not dis_on or not feed_on[0]</label>
 			<nail x="-510" y="0"/>
 			<nail x="-510" y="43"/>
 		</transition>
@@ -363,14 +373,14 @@ and temp_c &gt;= c_min</label>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="-382" y="-357">checkin1?</label>
+			<label kind="synchronisation" x="-382" y="-357">checkin0?</label>
 			<label kind="assignment" x="-382" y="-340">feedBelt = 1</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id6"/>
 			<label kind="guard" x="-280" y="-323">false</label>
-			<label kind="synchronisation" x="-195" y="-357">checkin2?</label>
+			<label kind="synchronisation" x="-195" y="-357">checkin1?</label>
 			<label kind="assignment" x="-195" y="-340">feedBelt = 2</label>
 		</transition>
 		<transition>
@@ -396,35 +406,36 @@ and temp_c &gt;= c_min</label>
 		<transition>
 			<source ref="id23"/>
 			<target ref="id24"/>
-			<label kind="guard" x="-93" y="-8">feed_on and temp_c== b</label>
+			<label kind="guard" x="-93" y="-8">feed_on[1] and temp_c== b</label>
 		</transition>
 		<transition>
 			<source ref="id25"/>
 			<target ref="id23"/>
-			<label kind="guard" x="-93" y="-85">feed_on and x==sensor_section_3</label>
+			<label kind="guard" x="-93" y="-85">feed_on[1] and x==sensor_section_3</label>
 			<label kind="assignment" x="-85" y="-68">temp_c := 0</label>
 		</transition>
 		<transition>
 			<source ref="id27"/>
 			<target ref="id25"/>
-			<label kind="guard" x="-85" y="-153">feed_on and x==sensor_section_main</label>
+			<label kind="guard" x="-85" y="-153">feed_on[1] and x==sensor_section_main</label>
 		</transition>
 		<transition>
 			<source ref="id26"/>
 			<target ref="id27"/>
-			<label kind="guard" x="-93" y="-221">feed_on and x==sensor_section_1</label>
+			<label kind="guard" x="-93" y="-221">feed_on[1] and x==sensor_section_1</label>
 		</transition>
 		<transition>
 			<source ref="id24"/>
 			<target ref="id24"/>
-			<label kind="guard" x="-17" y="18">not dis_on or not feed_on</label>
+			<label kind="guard" x="-17" y="18">not dis_on or not feed_on[1]</label>
 			<nail x="-26" y="9"/>
 			<nail x="-26" y="52"/>
 		</transition>
 	</template>
 	<template>
-		<name>DistributionBelt</name>
+		<name>DisBelt_motor</name>
 		<location id="id29" x="0" y="-34">
+			<committed/>
 		</location>
 		<location id="id30" x="0" y="34">
 			<name x="-10" y="0">Dist_stop</name>
@@ -502,9 +513,11 @@ dis_on:=true</label>
 		</location>
 		<location id="id34" x="-136" y="-102">
 			<name x="-146" y="-136">FeedBelt1</name>
+			<committed/>
 		</location>
 		<location id="id35" x="68" y="-102">
 			<name x="58" y="-136">FeedBelt2</name>
+			<committed/>
 		</location>
 		<location id="id36" x="-34" y="-204">
 			<committed/>
@@ -542,41 +555,49 @@ dis_on:=true</label>
 		<transition>
 			<source ref="id33"/>
 			<target ref="id35"/>
-			<label kind="synchronisation" x="-17" y="-119">checkin2!</label>
+			<label kind="synchronisation" x="-17" y="-119">checkin1!</label>
 		</transition>
 		<transition>
 			<source ref="id33"/>
 			<target ref="id34"/>
-			<label kind="synchronisation" x="-93" y="-119">checkin1!</label>
+			<label kind="synchronisation" x="-93" y="-119">checkin0!</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
 
 //Bag1 = Bag2();
-FeedBelt1 = FeedBelt(1);
-//FeedBelt2 = FeedBelt(2);
+FeedBelt0 = FeedBelt_motor(0);
+FeedBelt1 = FeedBelt_motor(1);
 
 // List one or more processes to be composed into a system.
-system  Controler, FeedBelt1, DistributionBelt, User, Bag_v2, Template0;</system>
+system  Controler_monkey , FeedBelt0, FeedBelt1, DisBelt_motor, User, Bag;</system>
 	<queries>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>deadlock check </comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Bag1.Destination_A</formula>
+			<formula>E&lt;&gt; Bag(1).Destination_A</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Bag1.Destination_B</formula>
+			<formula>E&lt;&gt; Bag(1).Destination_B</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Bag1.Destination_A and Bag1.x &lt;52)</formula>
+			<formula>E&lt;&gt; Bag(0).Finish</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Bag_v2.Destination_A and Bag_v2.x &gt;=79)</formula>
+			<formula>E&lt;&gt; (forall(i:t_id) Bag(i).Finish)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt;(Bag(1).Destination_A and Bag(1).x &lt;82)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Bag(1).Destination_A and Bag(1).x &gt;=79)</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -584,7 +605,7 @@ system  Controler, FeedBelt1, DistributionBelt, User, Bag_v2, Template0;</system
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A&lt;&gt; (Bag1.Destination_A || Bag1.Destination_B )</formula>
+			<formula>A&lt;&gt; (Bag(1).Destination_A || Bag(1).Destination_B )</formula>
 			<comment></comment>
 		</query>
 	</queries>
