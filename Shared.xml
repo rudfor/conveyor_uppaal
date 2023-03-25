@@ -10,7 +10,10 @@ const int BLACK   = 48;
 
 const int total_duration = 133;  //currently total duration is equal to the value Done
 
-bool singleFeedBelt:=true;
+const bool countBagsDelivered:=false;
+const bool singleFeedBelt:=true;
+const bool blackBagsOnly:=false;
+const int maxBagsIntroduced:=20;
 
 // Bags
 const int NUM_BAGS=2;
@@ -134,7 +137,7 @@ TURN ON FEEDBELT</label>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id7"/>
-			<label kind="guard" x="-646" y="119">destA==closeToA</label>
+			<label kind="guard" x="-654" y="119">destA==closeToA</label>
 			<label kind="assignment" x="-654" y="136">done:=done+69</label>
 			<nail x="-552" y="136"/>
 			<nail x="-552" y="136"/>
@@ -240,6 +243,7 @@ int feedBelt;
 int color;
 clock x_bag;    //Aggregate for bag travel time
 clock x;        //per element clock
+
 //clock temp_c;
 
 
@@ -248,18 +252,18 @@ clock x;        //per element clock
 		<location id="id11" x="-272" y="-501">
 			<name x="-314" y="-526">initial</name>
 		</location>
-		<location id="id12" x="136" y="-442">
-			<name x="25" y="-451">Destination_B</name>
-			<label kind="comments" x="25" y="-476">Bags: YELLOW</label>
+		<location id="id12" x="136" y="-408">
+			<name x="25" y="-417">Destination_B</name>
+			<label kind="comments" x="25" y="-442">Bags: YELLOW</label>
 			<committed/>
 		</location>
 		<location id="id13" x="-68" y="-280">
 			<label kind="comments" x="-170" y="-305">FEEDBELT 1</label>
 			<urgent/>
 		</location>
-		<location id="id14" x="-646" y="-442">
-			<name x="-629" y="-451">Destination_A</name>
-			<label kind="comments" x="-629" y="-476">Bags: BLACK</label>
+		<location id="id14" x="-646" y="-408">
+			<name x="-629" y="-417">Destination_A</name>
+			<label kind="comments" x="-629" y="-442">Bags: BLACK</label>
 			<committed/>
 		</location>
 		<location id="id15" x="-272" y="-425">
@@ -316,15 +320,15 @@ clock x;        //per element clock
 			<name x="-595" y="-25">fb0_post_sensor</name>
 			<label kind="invariant" x="-450" y="-9">x &lt;= post_sensor_delay</label>
 		</location>
-		<location id="id29" x="-476" y="85" color="#ffc0cb">
-			<name x="-578" y="60">fb0_pre_stop</name>
-			<label kind="invariant" x="-450" y="77">x &lt;= pre_stop</label>
-			<label kind="comments" x="-603" y="43">SECTION B: Pink</label>
+		<location id="id29" x="-476" y="93" color="#ffc0cb">
+			<name x="-578" y="68">fb0_pre_stop</name>
+			<label kind="invariant" x="-450" y="85">x &lt;= pre_stop</label>
+			<label kind="comments" x="-603" y="51">SECTION B: Pink</label>
 		</location>
-		<location id="id30" x="-68" y="85" color="#ffc0cb">
-			<name x="-170" y="60">fb1_pre_stop</name>
-			<label kind="invariant" x="-42" y="77">x &lt;= pre_stop</label>
-			<label kind="comments" x="-195" y="43">SECTION B: Pink</label>
+		<location id="id30" x="-68" y="93" color="#ffc0cb">
+			<name x="-170" y="68">fb1_pre_stop</name>
+			<label kind="invariant" x="-42" y="85">x &lt;= pre_stop</label>
+			<label kind="comments" x="-195" y="51">SECTION B: Pink</label>
 		</location>
 		<location id="id31" x="-68" y="153" color="#ffc0cb">
 			<name x="-136" y="119">fb1_stop</name>
@@ -354,6 +358,19 @@ clock x;        //per element clock
 			<name x="92" y="153">fb1_stopped</name>
 		</location>
 		<init ref="id11"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id35"/>
+			<label kind="guard" x="-578" y="-518">countBagsDelivered</label>
+			<label kind="assignment" x="-578" y="-501">Delivered[0]++</label>
+			<nail x="-578" y="-493"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id35"/>
+			<label kind="guard" x="-34" y="-569">not countBagsDelivered</label>
+			<nail x="136" y="-544"/>
+		</transition>
 		<transition>
 			<source ref="id21"/>
 			<target ref="id19"/>
@@ -389,12 +406,15 @@ collision[0]--</label>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id35"/>
-			<nail x="136" y="-510"/>
+			<label kind="guard" x="-68" y="-518">countBagsDelivered</label>
+			<label kind="assignment" x="-68" y="-501">Delivered[1]++</label>
+			<nail x="68" y="-501"/>
 		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id35"/>
-			<nail x="-646" y="-510"/>
+			<label kind="guard" x="-628" y="-573">not countBagsDelivered</label>
+			<nail x="-646" y="-527"/>
 		</transition>
 		<transition>
 			<source ref="id31"/>
@@ -464,9 +484,8 @@ x:=0</label>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id12"/>
-			<label kind="guard" x="8" y="-416">not fwd and dis_on
+			<label kind="guard" x="8" y="-374">not fwd and dis_on
 and x &gt;= e_min</label>
-			<label kind="assignment" x="8" y="-374">Delivered[1]++</label>
 		</transition>
 		<transition>
 			<source ref="id25"/>
@@ -503,9 +522,8 @@ collision[0]--</label>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id14"/>
-			<label kind="guard" x="-637" y="-416">fwd and dis_on
+			<label kind="guard" x="-637" y="-374">fwd and dis_on
 and x &gt;= e_min</label>
-			<label kind="assignment" x="-637" y="-374">Delivered[0]++</label>
 		</transition>
 		<transition>
 			<source ref="id23"/>
@@ -648,7 +666,9 @@ dis_on:=true</label>
 	</template>
 	<template>
 		<name>User</name>
-		<declaration>bool activelyLoading = false;</declaration>
+		<declaration>bool activelyLoading = false;
+int bagsIntroduced:=0;
+</declaration>
 		<location id="id42" x="816" y="-119">
 			<name x="773" y="-85">BagCreated</name>
 		</location>
@@ -670,7 +690,7 @@ dis_on:=true</label>
 		<transition>
 			<source ref="id46"/>
 			<target ref="id45"/>
-			<label kind="guard" x="825" y="-297">not activelyLoading</label>
+			<label kind="guard" x="833" y="-297">not activelyLoading and bagsIntroduced &lt;= maxBagsIntroduced</label>
 			<label kind="synchronisation" x="825" y="-280">Init!</label>
 			<label kind="assignment" x="825" y="-263">activelyLoading:=true</label>
 		</transition>
@@ -687,13 +707,14 @@ dis_on:=true</label>
 		<transition>
 			<source ref="id45"/>
 			<target ref="id42"/>
-			<label kind="synchronisation" x="740" y="-204">colorT!</label>
+			<label kind="synchronisation" x="731" y="-195">colorT!</label>
 			<nail x="782" y="-178"/>
 		</transition>
 		<transition>
 			<source ref="id45"/>
 			<target ref="id42"/>
-			<label kind="synchronisation" x="842" y="-212">colorF!</label>
+			<label kind="guard" x="850" y="-204">not blackBagsOnly</label>
+			<label kind="synchronisation" x="850" y="-187">colorF!</label>
 			<nail x="850" y="-178"/>
 		</transition>
 		<transition>
@@ -862,7 +883,7 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, T1,
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A&lt;&gt; (collision[0] &lt;= 1 and collision[1] &lt;= 1)</formula>
+			<formula>A[] (collision[0] &lt;= 1 and collision[1] &lt;= 1)</formula>
 			<comment>for all the paths, there will be no collition in the critical area collision zero or one</comment>
 		</query>
 		<query>
@@ -872,6 +893,10 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, T1,
 		<query>
 			<formula>Bag(0).Initalized --&gt; Bag(0).Finish</formula>
 			<comment>All the bags in destination A will arrive to state finish</comment>
+		</query>
+		<query>
+			<formula>A[] (forall(i:t_id)(Bag(i).c1) imply (feed_on[0]!=0 and feed_on[1]!=0 and dis_on!=0))</formula>
+			<comment></comment>
 		</query>
 		<query>
 			<formula>--&gt;</formula>
