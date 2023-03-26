@@ -68,12 +68,6 @@ const int pre_stop = 480/20;                // after sensor before queue | pause
 
 const int motor_stop = active_sensor_time+post_sensor_delay+pre_stop-1;
 
-
-//int sensor_section_1 = 40/20;
-//int sensor_section_main = (40+ 240)/20; 
-//int sensor_section_3 = (40 + 240 +40) /20;
-//int belt_c_min =24; 
-//int b = 480/20;
 int c_min = 24;
 int c_max = 27;
 int d_min = 22;
@@ -83,9 +77,7 @@ int e_max = 12;
 int f_min = 25;
 int f_max = 31;
 
-
-//chan do_c, do_e;
-//chan fwd_sync, fwd_sync_n;</declaration>
+</declaration>
 	<template>
 		<name>FeedBelt_Controller</name>
 		<parameter>const int[0,1] belt</parameter>
@@ -222,7 +214,7 @@ now := now +40, x:=0</label>
 		</transition>
 	</template>
 	<template>
-		<name>Template0</name>
+		<name>Sync</name>
 		<parameter>const int[0,1] belt</parameter>
 		<location id="id10" x="0" y="0">
 		</location>
@@ -801,8 +793,8 @@ int bagsIntroduced:=0;
 
 FeedBelt_Controller0 = FeedBelt_Controller(0);
 FeedBelt_Controller1 = FeedBelt_Controller(1);
-T0 = Template0(0);
-T1 = Template0(1);
+T0 = Sync(0);
+T1 = Sync(1);
 
 // List one or more processes to be composed into a system.
 //system Controller, FeedBelt0, FeedBelt1, DisBelt_motor, User, Bag;
@@ -810,6 +802,68 @@ T1 = Template0(1);
 system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, T1, T0;
 </system>
 	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (Bag(1).Destination_A imply Bag(1).color == BLACK) 
+     and (Bag(1).Destination_B imply Bag(1).color == YELLOW)</formula>
+			<comment>Verified </comment>
+		</query>
+		<query>
+			<formula>A[] (collision[0] &lt;= 1 and collision[1] &lt;= 1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] ( forall(i:t_id) Bag(i).fb0_pre_sensor &lt;=1 
+      and Bag(i).fb0_sensor &lt;=1 and Bag(i).fb0_post_sensor &lt;=1 
+      and Bag(i).fb0_pre_stop&lt;=1 and Bag(i).fb0_stop&lt;=1        ) </formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] ( forall(i:t_id) Bag(i).fb1_pre_sensor &lt;=1 
+      and Bag(i).fb1_sensor &lt;=1 and Bag(i).fb1_post_sensor &lt;=1 
+      and Bag(i).fb1_pre_stop&lt;=1 and Bag(i).fb1_stop&lt;=1        ) 
+</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] ( forall(i:t_id) Bag(i).c1 &lt;=1 and Bag(i).c2&lt;=1
+      and Bag(i).d1 &lt;=1 and Bag(i).d2&lt;=1 and Bag(i).e1&lt;=1 
+      and Bag(i).e2&lt;=1 and Bag(i).f&lt;=1                         ) </formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (forall(i:t_id)(Bag(i).c1) imply (feed_on[0]!=0 and feed_on[1]!=0 and dis_on!=0))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (forall(i:t_id) ((Bag(i).c1) or (Bag(i).c2) or (Bag(i).d1) or (Bag(i).d2) or
+(Bag(i).e1) or (Bag(i).e2) or (Bag(i).f)) imply (dis_on!=0))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Bag(1).x_bag &gt;= 200 imply (Bag(1).Destination_A || Bag(1).Destination_B ) 
+</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Bag(0).initial --&gt; Bag(0).Finish</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Bag(0).fb0_pre_sensor --&gt; Bag(0).Finish</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>forall(i:t_id) Bag(i).fb0_pre_sensor --&gt; forall(i:t_id) Bag(i).Destination_A</formula>
+			<comment></comment>
+		</query>
 		<query>
 			<formula>A[] singleFeedBelt imply not deadlock</formula>
 			<comment></comment>
