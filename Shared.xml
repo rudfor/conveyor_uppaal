@@ -68,14 +68,14 @@ const int pre_stop = 480/20;                // after sensor before queue | pause
 
 const int motor_stop = active_sensor_time+post_sensor_delay+pre_stop-1;
 
-int c_min = 24;
-int c_max = 27;
-int d_min = 22;
-int d_max = 23;
-int e_min = 10;
-int e_max = 12;
-int f_min = 25;
-int f_max = 31;
+const int c_min = 24;
+const int c_max = 27;
+const int d_min = 22;
+const int d_max = 23;
+const int e_min = 10;
+const int e_max = 12;
+const int f_min = 25;
+const int f_max = 31;
 
 </declaration>
 	<template>
