@@ -88,7 +88,7 @@ int f_max = 31;
 
 </declaration>
 	<template>
-		<name>FeedBelt_Controller</name>
+		<name>FeedBelt_Controller_qa7</name>
 		<parameter>const int[0,1] belt</parameter>
 		<declaration>int now =0;
 int done = 40;
@@ -98,17 +98,17 @@ bool closeToA;
 bool sensorActive;
 bool previousDest;</declaration>
 		<location id="id0" x="-510" y="-357">
-			<label kind="comments" x="-680" y="-374">INITIAL CONDITION
+			<label kind="comments" x="-680" y="-365">INITIAL CONDITION
 TURN ON FEEDBELT</label>
 			<committed/>
 		</location>
 		<location id="id1" x="-510" y="-263">
 		</location>
 		<location id="id2" x="-510" y="-136">
-			<label kind="invariant" x="-493" y="-145">x&lt;=pre_sensor_delay</label>
+			<label kind="invariant" x="-493" y="-144">x&lt;=pre_sensor_delay</label>
 		</location>
 		<location id="id3" x="-510" y="-51">
-			<label kind="invariant" x="-493" y="-60">x&lt;=motor_stop</label>
+			<label kind="invariant" x="-493" y="-59">x&lt;=motor_stop</label>
 		</location>
 		<location id="id4" x="-510" y="9">
 			<urgent/>
@@ -121,7 +121,7 @@ TURN ON FEEDBELT</label>
 			<committed/>
 		</location>
 		<location id="id7" x="-612" y="68">
-			<name x="-621" y="34">Close_direction</name>
+			<name x="-620" y="34">Close_direction</name>
 			<committed/>
 		</location>
 		<location id="id8" x="-408" y="68">
@@ -132,7 +132,7 @@ TURN ON FEEDBELT</label>
 			<name x="-501" y="162">Waiting</name>
 			<label kind="invariant" x="-493" y="179">x &lt;= done</label>
 		</location>
-		<location id="id10" x="-510" y="280">
+		<location id="id10" x="-510" y="281">
 			<name x="-501" y="255">ChangeDirection</name>
 		</location>
 		<location id="id11" x="-510" y="340">
@@ -172,7 +172,7 @@ TURN ON FEEDBELT</label>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id12"/>
-			<label kind="guard" x="-773" y="76">destA == previousDest</label>
+			<label kind="guard" x="-773" y="77">destA == previousDest</label>
 			<nail x="-646" y="68"/>
 		</transition>
 		<transition>
@@ -243,25 +243,25 @@ x:=0</label>
 			<target ref="id10"/>
 			<label kind="guard" x="-501" y="196">x &gt;= done</label>
 			<label kind="synchronisation" x="-501" y="213">dis_stop!</label>
-			<label kind="assignment" x="-501" y="229">feed_on[belt] = true</label>
+			<label kind="assignment" x="-501" y="230">feed_on[belt] = true</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-476" y="297">destA</label>
-			<label kind="synchronisation" x="-476" y="314">dis_forward!</label>
-			<nail x="-476" y="314"/>
+			<label kind="guard" x="-476" y="298">destA</label>
+			<label kind="synchronisation" x="-476" y="315">dis_forward!</label>
+			<nail x="-476" y="315"/>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-603" y="288">not destA</label>
-			<label kind="synchronisation" x="-603" y="305">dis_back!</label>
-			<nail x="-544" y="314"/>
+			<label kind="guard" x="-603" y="289">not destA</label>
+			<label kind="synchronisation" x="-603" y="306">dis_back!</label>
+			<nail x="-544" y="315"/>
 		</transition>
 	</template>
 	<template>
-		<name>FeedBelt_Controller_old</name>
+		<name>FeedBelt_Controller</name>
 		<parameter>const int[0,1] belt</parameter>
 		<declaration>int now =0;
 int done = 40;
@@ -296,49 +296,53 @@ TURN ON FEEDBELT</label>
 			<name x="-731" y="94">End_of_feed_belt</name>
 			<committed/>
 		</location>
-		<location id="id22" x="-510" y="85">
-			<label kind="invariant" x="-484" y="76">x &lt;= 1</label>
-		</location>
-		<location id="id23" x="-510" y="136">
+		<location id="id22" x="-510" y="136">
 			<committed/>
 		</location>
-		<location id="id24" x="-509" y="-229">
+		<location id="id23" x="-509" y="-229">
+			<committed/>
+		</location>
+		<location id="id24" x="-680" y="-255">
+			<name x="-690" y="-289">sleep1200</name>
+			<label kind="comments" x="-807" y="-153">pre_sensor_delay and Motor_stop acounts 
+for the total duration of section of A 
+and B. Including the sleeping times: 
+800, 2000 and 1200 for a total of 4000.</label>
 			<committed/>
 		</location>
 		<init ref="id14"/>
 		<transition>
 			<source ref="id24"/>
+			<target ref="id15"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
 			<target ref="id17"/>
 			<label kind="synchronisation" x="-501" y="-212">start_sensor[belt]!</label>
 		</transition>
 		<transition>
 			<source ref="id22"/>
-			<target ref="id23"/>
-		</transition>
-		<transition>
-			<source ref="id23"/>
 			<target ref="id21"/>
 			<label kind="guard" x="-654" y="119">destA==closeToA</label>
-			<label kind="assignment" x="-654" y="136">done:=done+69</label>
+			<label kind="assignment" x="-654" y="136">done:=done+60</label>
 			<nail x="-552" y="136"/>
 			<nail x="-552" y="136"/>
 		</transition>
 		<transition>
-			<source ref="id23"/>
+			<source ref="id22"/>
 			<target ref="id21"/>
 			<label kind="guard" x="-654" y="187">destA!=closeToA</label>
-			<label kind="assignment" x="-654" y="204">done=done+138</label>
+			<label kind="assignment" x="-654" y="204">done=done+120</label>
 			<nail x="-544" y="204"/>
 			<nail x="-654" y="204"/>
 		</transition>
 		<transition>
 			<source ref="id21"/>
-			<target ref="id15"/>
-			<nail x="-680" y="-272"/>
+			<target ref="id24"/>
 		</transition>
 		<transition>
 			<source ref="id16"/>
-			<target ref="id23"/>
+			<target ref="id22"/>
 			<label kind="guard" x="-442" y="187">destA</label>
 			<label kind="synchronisation" x="-442" y="204">dis_forward!</label>
 			<nail x="-357" y="204"/>
@@ -351,14 +355,14 @@ TURN ON FEEDBELT</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
-			<target ref="id24"/>
+			<target ref="id23"/>
 			<label kind="synchronisation" x="-500" y="-297">go[belt]?</label>
 			<label kind="assignment" x="-501" y="-280">sensorActive=true,
 x:=0</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
-			<target ref="id23"/>
+			<target ref="id22"/>
 			<label kind="guard" x="-399" y="119">not destA</label>
 			<label kind="synchronisation" x="-399" y="136">dis_back!</label>
 		</transition>
@@ -1066,6 +1070,7 @@ x:=0</label>
 			<source ref="id72"/>
 			<target ref="id73"/>
 			<label kind="guard" x="-59" y="-170">x==pre_sensor_delay</label>
+			<label kind="synchronisation" x="-68" y="-148">Sensor_[feedBelt]!</label>
 			<label kind="assignment" x="-59" y="-136">Sensor[1]:=Sensor_output[1],
 x:=0</label>
 		</transition>
@@ -1263,7 +1268,11 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[](Bag(1).Destination_A imply (Bag(1).x_bag &lt;=133))</formula>
+			<formula>A[](Bag(1).Destination_A imply (Bag(1).x_bag &gt;=74 and Bag(1).x_bag &lt;=176 and Bag(1).color == BLACK))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[](Bag(1).Destination_A imply (Bag(1).x_bag &lt;=176))</formula>
 			<comment></comment>
 		</query>
 		<query>
