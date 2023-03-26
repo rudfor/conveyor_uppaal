@@ -61,7 +61,6 @@ urgent chan continue_feed[2];
 // -SENSOR-
 const int pre_sensor_delay = 80/20;        // pre stable Sensor Reading
 const int active_sensor_time = (200)/20;   // Active Sensor Area
-//const int post_sensor_time = 40/20;        // Time before pause section B 
 const int post_sensor_delay = 40/20;       // post stable Sensor Reading
 
 // Question 5:
@@ -243,9 +242,11 @@ const int post_sensor_time_original = 40/20;        // Time before pause section
 			<committed/>
 		</location>
 		<location id="id12" x="-850" y="-102">
+			<name x="-860" y="-136">Black_brick</name>
 			<committed/>
 		</location>
 		<location id="id13" x="-918" y="-238">
+			<name x="-928" y="-272">Start</name>
 		</location>
 		<location id="id14" x="-850" y="-25" color="#00ffff">
 			<name x="-943" y="-51">B_pre_sensor</name>
@@ -263,6 +264,7 @@ const int post_sensor_time_original = 40/20;        // Time before pause section
 			<committed/>
 		</location>
 		<location id="id18" x="-1190" y="-102">
+			<name x="-1200" y="-136">Yellow_brick</name>
 			<committed/>
 		</location>
 		<location id="id19" x="-1190" y="-25" color="#00ffff">
@@ -471,7 +473,7 @@ x:=0</label>
 		<transition>
 			<source ref="id26"/>
 			<target ref="id32"/>
-			<label kind="assignment" x="-1181" y="-85">Sensor_output[belt] = fint(random_arcsine(50,60)),
+			<label kind="assignment" x="-1181" y="-85">Sensor_output[belt] = fint(random_arcsine(50,70)),
 x:=0</label>
 		</transition>
 		<transition>
@@ -519,8 +521,6 @@ int color;
 clock x_bag;    //Aggregate for bag travel time
 clock x;        //per element clock
 
-//clock temp_c;
-
 </declaration>
 		<location id="id36" x="-272" y="-501">
 			<name x="-314" y="-526">initial</name>
@@ -530,8 +530,8 @@ clock x;        //per element clock
 			<label kind="comments" x="25" y="-442">Bags: YELLOW</label>
 			<committed/>
 		</location>
-		<location id="id38" x="-68" y="-280">
-			<label kind="comments" x="-34" y="-306">FEEDBELT 1</label>
+		<location id="id38" x="-68" y="-246">
+			<label kind="comments" x="-34" y="-272">FEEDBELT 1</label>
 			<urgent/>
 		</location>
 		<location id="id39" x="-646" y="-408">
@@ -544,8 +544,8 @@ clock x;        //per element clock
 		<location id="id41" x="-272" y="-357">
 			<name x="-297" y="-340">Initalized</name>
 		</location>
-		<location id="id42" x="-476" y="-280">
-			<label kind="comments" x="-578" y="-305">FEEDBELT 0</label>
+		<location id="id42" x="-476" y="-246">
+			<label kind="comments" x="-578" y="-271">FEEDBELT 0</label>
 			<urgent/>
 		</location>
 		<location id="id43" x="-476" y="153" color="#ffc0cb">
@@ -630,7 +630,23 @@ clock x;        //per element clock
 		<location id="id62" x="102" y="187">
 			<name x="92" y="153">fb1_stopped</name>
 		</location>
+		<location id="id63" x="-476" y="-306">
+			<urgent/>
+		</location>
+		<location id="id64" x="-68" y="-306">
+			<urgent/>
+		</location>
 		<init ref="id36"/>
+		<transition>
+			<source ref="id64"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-68" y="-293">go[feedBelt]!</label>
+		</transition>
+		<transition>
+			<source ref="id63"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-476" y="-297">go[feedBelt]!</label>
+		</transition>
 		<transition>
 			<source ref="id39"/>
 			<target ref="id60"/>
@@ -700,8 +716,7 @@ collision[1]++</label>
 		<transition>
 			<source ref="id38"/>
 			<target ref="id58"/>
-			<label kind="guard" x="-59" y="-272">feed_on[1]</label>
-			<label kind="synchronisation" x="-59" y="-255">go[feedBelt]!</label>
+			<label kind="guard" x="-51" y="-255">feed_on[1]</label>
 			<label kind="assignment" x="-59" y="-238">Sensor[1]:=Sensor_output[1],
 x:=0</label>
 		</transition>
@@ -728,9 +743,8 @@ x := 0</label>
 		<transition>
 			<source ref="id42"/>
 			<target ref="id51"/>
-			<label kind="guard" x="-467" y="-272">feed_on[0]</label>
-			<label kind="synchronisation" x="-467" y="-255">go[feedBelt]!</label>
-			<label kind="assignment" x="-467" y="-238">Sensor[0]:=Sensor_output[0],
+			<label kind="guard" x="-459" y="-246">feed_on[0]</label>
+			<label kind="assignment" x="-467" y="-229">Sensor[0]:=Sensor_output[0],
 x:=0</label>
 		</transition>
 		<transition>
@@ -821,7 +835,7 @@ collision[0]--</label>
 		</transition>
 		<transition>
 			<source ref="id41"/>
-			<target ref="id42"/>
+			<target ref="id63"/>
 			<label kind="synchronisation" x="-459" y="-374">checkin0?</label>
 			<label kind="assignment" x="-459" y="-357">feedBelt = 0,
 BagsOnFeed[0]++, 
@@ -830,7 +844,7 @@ Sensor_input[0] = color</label>
 		</transition>
 		<transition>
 			<source ref="id41"/>
-			<target ref="id38"/>
+			<target ref="id64"/>
 			<label kind="synchronisation" x="-212" y="-374">checkin1?</label>
 			<label kind="assignment" x="-212" y="-357">feedBelt = 1,
 BagsOnFeed[1]++,
@@ -887,51 +901,51 @@ x:=0</label>
 	</template>
 	<template>
 		<name>DisBelt_motor</name>
-		<location id="id63" x="-170" y="-136">
+		<location id="id65" x="-170" y="-136">
 			<committed/>
 		</location>
-		<location id="id64" x="0" y="25">
+		<location id="id66" x="0" y="25">
 			<name x="-34" y="42">Dist_stop</name>
 			<committed/>
 		</location>
-		<location id="id65" x="-170" y="-34">
+		<location id="id67" x="-170" y="-34">
 			<name x="-238" y="-59">Forward</name>
 		</location>
-		<location id="id66" x="162" y="-34">
+		<location id="id68" x="162" y="-34">
 			<name x="179" y="-60">Back</name>
 		</location>
-		<init ref="id63"/>
+		<init ref="id65"/>
 		<transition>
-			<source ref="id63"/>
-			<target ref="id65"/>
+			<source ref="id65"/>
+			<target ref="id67"/>
 			<label kind="assignment" x="-161" y="-127">dis_on := true,
 fwd:=true</label>
 		</transition>
 		<transition>
-			<source ref="id66"/>
-			<target ref="id64"/>
+			<source ref="id68"/>
+			<target ref="id66"/>
 			<label kind="synchronisation" x="42" y="-51">dis_stop?</label>
 			<label kind="assignment" x="42" y="-34">dis_on := false</label>
 			<nail x="43" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id65"/>
-			<target ref="id64"/>
+			<source ref="id67"/>
+			<target ref="id66"/>
 			<label kind="synchronisation" x="-136" y="-51">dis_stop?</label>
 			<label kind="assignment" x="-136" y="-34">dis_on := false</label>
 			<nail x="-33" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id64"/>
-			<target ref="id65"/>
+			<source ref="id66"/>
+			<target ref="id67"/>
 			<label kind="synchronisation" x="-136" y="0">dis_forward?</label>
 			<label kind="assignment" x="-136" y="25">fwd:= true,
 dis_on:=true</label>
 			<nail x="-144" y="25"/>
 		</transition>
 		<transition>
-			<source ref="id64"/>
-			<target ref="id66"/>
+			<source ref="id66"/>
+			<target ref="id68"/>
 			<label kind="synchronisation" x="59" y="8">dis_back?</label>
 			<label kind="assignment" x="59" y="25">fwd := false,
 dis_on:=true</label>
@@ -943,128 +957,67 @@ dis_on:=true</label>
 		<declaration>bool activelyLoading = false;
 int bagsIntroduced:=0;
 </declaration>
-		<location id="id67" x="816" y="-119">
+		<location id="id69" x="816" y="-119">
 			<name x="773" y="-85">BagCreated</name>
 		</location>
-		<location id="id68" x="646" y="-136">
+		<location id="id70" x="646" y="-136">
 			<name x="570" y="-161">FeedBelt0</name>
 			<committed/>
 		</location>
-		<location id="id69" x="1003" y="-136">
+		<location id="id71" x="1003" y="-136">
 			<name x="1011" y="-161">FeedBelt1</name>
 			<committed/>
 		</location>
-		<location id="id70" x="816" y="-221">
+		<location id="id72" x="816" y="-221">
 			<committed/>
 		</location>
-		<location id="id71" x="816" y="-306">
+		<location id="id73" x="816" y="-306">
 			<name x="806" y="-340">UserReady</name>
 		</location>
-		<init ref="id71"/>
+		<init ref="id73"/>
 		<transition>
-			<source ref="id71"/>
-			<target ref="id70"/>
+			<source ref="id73"/>
+			<target ref="id72"/>
 			<label kind="guard" x="833" y="-297">not activelyLoading and bagsIntroduced &lt;= maxBagsIntroduced</label>
 			<label kind="synchronisation" x="825" y="-280">Init!</label>
 			<label kind="assignment" x="825" y="-263">activelyLoading:=true</label>
 		</transition>
 		<transition>
-			<source ref="id69"/>
-			<target ref="id71"/>
+			<source ref="id71"/>
+			<target ref="id73"/>
 			<nail x="1003" y="-297"/>
 		</transition>
 		<transition>
-			<source ref="id68"/>
-			<target ref="id71"/>
+			<source ref="id70"/>
+			<target ref="id73"/>
 			<nail x="646" y="-289"/>
 		</transition>
 		<transition>
-			<source ref="id70"/>
-			<target ref="id67"/>
+			<source ref="id72"/>
+			<target ref="id69"/>
 			<label kind="synchronisation" x="731" y="-195">colorT!</label>
 			<nail x="782" y="-178"/>
 		</transition>
 		<transition>
-			<source ref="id70"/>
-			<target ref="id67"/>
+			<source ref="id72"/>
+			<target ref="id69"/>
 			<label kind="guard" x="850" y="-204">not blackBagsOnly</label>
 			<label kind="synchronisation" x="850" y="-187">colorF!</label>
 			<nail x="850" y="-178"/>
 		</transition>
 		<transition>
-			<source ref="id67"/>
-			<target ref="id69"/>
+			<source ref="id69"/>
+			<target ref="id71"/>
 			<label kind="guard" x="842" y="-119">not singleFeedBelt and BagsOnFeed[1]==0</label>
 			<label kind="synchronisation" x="884" y="-153">checkin1!</label>
 			<label kind="assignment" x="842" y="-102">activelyLoading=false</label>
 		</transition>
 		<transition>
-			<source ref="id67"/>
-			<target ref="id68"/>
+			<source ref="id69"/>
+			<target ref="id70"/>
 			<label kind="guard" x="663" y="-119">BagsOnFeed[0]==0</label>
 			<label kind="synchronisation" x="697" y="-153">checkin0!</label>
 			<label kind="assignment" x="664" y="-102">activelyLoading=false</label>
-		</transition>
-	</template>
-	<template>
-		<name>User_two</name>
-		<location id="id72" x="-34" y="-136">
-			<name x="-44" y="-170">BagCreated</name>
-			<committed/>
-		</location>
-		<location id="id73" x="-238" y="-136">
-			<name x="-306" y="-170">FeedBelt0</name>
-			<committed/>
-		</location>
-		<location id="id74" x="170" y="-136">
-			<name x="178" y="-161">FeedBelt1</name>
-			<committed/>
-		</location>
-		<location id="id75" x="-34" y="-246">
-			<committed/>
-		</location>
-		<location id="id76" x="-34" y="-306">
-			<name x="-44" y="-340">UserReady</name>
-		</location>
-		<init ref="id76"/>
-		<transition>
-			<source ref="id76"/>
-			<target ref="id75"/>
-			<label kind="synchronisation" x="-25" y="-289">Init!</label>
-		</transition>
-		<transition>
-			<source ref="id74"/>
-			<target ref="id76"/>
-			<nail x="170" y="-298"/>
-		</transition>
-		<transition>
-			<source ref="id73"/>
-			<target ref="id76"/>
-			<nail x="-238" y="-298"/>
-		</transition>
-		<transition>
-			<source ref="id75"/>
-			<target ref="id72"/>
-			<label kind="synchronisation" x="-119" y="-212">colorT!</label>
-			<nail x="-68" y="-187"/>
-		</transition>
-		<transition>
-			<source ref="id75"/>
-			<target ref="id72"/>
-			<label kind="synchronisation" x="8" y="-212">colorF!</label>
-			<nail x="0" y="-187"/>
-		</transition>
-		<transition>
-			<source ref="id72"/>
-			<target ref="id74"/>
-			<label kind="guard" x="8" y="-136">BagsOnFeed[1]==0</label>
-			<label kind="synchronisation" x="34" y="-161">checkin1!</label>
-		</transition>
-		<transition>
-			<source ref="id72"/>
-			<target ref="id73"/>
-			<label kind="guard" x="-195" y="-136">BagsOnFeed[0]==0</label>
-			<label kind="synchronisation" x="-170" y="-161">checkin0!</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
@@ -1143,10 +1096,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[] ((Bag(0).color == YELLOW) imply A&lt;&gt; Bag(0).Destination_B)</formula>
-			<comment></comment>
-		</query>
-		<query>
 			<formula>A[] (collision[0] &lt;= 1 and collision[1] &lt;= 1)</formula>
 			<comment>for all the paths, there will be no collition in the critical area collision zero or one</comment>
 		</query>
@@ -1163,16 +1112,21 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula>--&gt;</formula>
-			<comment>leads to </comment>
-		</query>
-		<query>
-			<formula>A[] Bag(0).Destination_A imply Bag(0).color == BLACK
+			<formula>A[] Bag(0).Destination_A imply Bag(0).color == YELLOW
 </formula>
 			<comment>For all the execution paths, the bag zero in destination A have a the black color.</comment>
 		</query>
 		<query>
+			<formula>A[] Bag(0).Destination_A imply Bag(0).color == BLACK
+</formula>
+			<comment></comment>
+		</query>
+		<query>
 			<formula>A[] Bag(0).Destination_B imply Bag(0).color == YELLOW</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] Bag(0).Destination_B imply Bag(0).color == BLACK</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -1188,10 +1142,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 		<query>
 			<formula>A&lt;&gt; (Bag(0).Destination_A or Bag(0).Destination_B)</formula>
 			<comment>There exists a path where bag zero gets to either destination A or destination B</comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt;(Bag(0).Initalized) --&gt; (Bag(0).Destination_A or Bag(0).Destination_B) </formula>
-			<comment></comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; (Bag(1).Destination_A or Bag(1).Destination_B)</formula>
@@ -1254,10 +1204,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
 			<formula>A[] (Bag(1).Destination_A imply Bag(1).color == BLACK) 
      and (Bag(1).Destination_B imply Bag(1).color == YELLOW)</formula>
 			<comment>Verified </comment>
@@ -1304,10 +1250,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
 			<formula>Bag(0).fb0_pre_sensor --&gt; Bag(0).Finish</formula>
 			<comment></comment>
 		</query>
@@ -1326,10 +1268,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment></comment>
-		</query>
-		<query>
-			<formula>E[] forall(i:t_id) Bag(i).color==YELLOW --&gt; Bag(i).Destination_B</formula>
-			<comment>deadlock check </comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; Bag(0).Destination_A</formula>
@@ -1384,10 +1322,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[] ((Bag(0).color == YELLOW) imply A&lt;&gt; Bag(0).Destination_B)</formula>
-			<comment></comment>
-		</query>
-		<query>
 			<formula>A[] (collision[0] &lt;= 1 and collision[1] &lt;= 1)</formula>
 			<comment>for all the paths, there will be no collition in the critical area collision zero or one</comment>
 		</query>
@@ -1402,10 +1336,6 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 		<query>
 			<formula>A[] (forall(i:t_id)(Bag(i).c1) imply (feed_on[0]!=0 and feed_on[1]!=0 and dis_on!=0))</formula>
 			<comment></comment>
-		</query>
-		<query>
-			<formula>--&gt;</formula>
-			<comment>leads to </comment>
 		</query>
 		<query>
 			<formula>A[] Bag(0).Destination_A imply Bag(0).color == BLACK
@@ -1427,8 +1357,8 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment>There exists a path where bag zero gets to either destination A or destination B</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt;(Bag(0).Initalized) --&gt; (Bag(0).Destination_A or Bag(0).Destination_B) </formula>
-			<comment></comment>
+			<formula></formula>
+			<comment>//E&lt;&gt;(Bag(0).Initalized) --&gt; (Bag(0).Destination_A or Bag(0).Destination_B) </comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; (Bag(1).Destination_A or Bag(1).Destination_B)</formula>
@@ -1475,11 +1405,7 @@ system FeedBelt_Controller0, FeedBelt_Controller1, DisBelt_motor, User, Bag, Ret
 			<comment></comment>
 		</query>
 		<query>
-			<formula>forall(i:t_id) Bag(i).</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt;  Bag(1).Initalized --&gt; (Bag(1).Destination_A || Bag(1).Destination_B )</formula>
+			<formula>Bag(1).Initalized --&gt; (Bag(1).Destination_A || Bag(1).Destination_B )</formula>
 			<comment></comment>
 		</query>
 	</queries>
