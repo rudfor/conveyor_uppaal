@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+bool S; //Sensor breach from laser
+bool R; //Recording on
+
+// Items
+const int NUM_ITEMS=4;
+typedef int[0, NUM_ITEMS-1] t_id;
+
+const int NUM_ITEM_TYPES=25;
+typedef scalar[NUM_ITEM_TYPES] s_t;
+
+int array[NUM_ITEM_TYPES];
+
+chan ItemArrive; //used by the user to set the bags on the feed
+
+chan recordOn, recordOff; //used by the user to set the bags on the feed
+</declaration>
+	<template>
+		<name x="5" y="5">Item</name>
+		<parameter>t_id item_id</parameter>
+		<declaration>// Place local declarations here.
+clock x;        //per element clock
+int ITEM;
+//string item;</declaration>
+		<location id="id0" x="93" y="399">
+			<name x="110" y="374">LeftVideoZone</name>
+			<urgent/>
+		</location>
+		<location id="id1" x="93" y="314">
+			<name x="-8" y="280">RecordingEnd</name>
+			<label kind="invariant" x="110" y="306">x&lt;=6</label>
+		</location>
+		<location id="id2" x="93" y="221">
+			<name x="17" y="187">Recording</name>
+			<label kind="invariant" x="110" y="212">x&lt;=5</label>
+		</location>
+		<location id="id3" x="93" y="136">
+			<name x="-25" y="110">PreRecordDelay</name>
+			<label kind="invariant" x="110" y="127">x&lt;=9</label>
+		</location>
+		<location id="id4" x="93" y="59">
+			<name x="0" y="34">LaserBreach</name>
+			<label kind="invariant" x="110" y="51">x&lt;=5</label>
+		</location>
+		<location id="id5" x="93" y="-25">
+			<name x="102" y="-59">initial</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id5"/>
+			<nail x="-68" y="357"/>
+			<nail x="-68" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="102" y="331">x==6</label>
+			<label kind="assignment" x="102" y="348">array[ITEM]++</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="guard" x="102" y="238">x==5</label>
+			<label kind="synchronisation" x="102" y="255">recordOff!</label>
+			<label kind="assignment" x="102" y="272">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="102" y="144">x==9</label>
+			<label kind="synchronisation" x="102" y="161">recordOn!</label>
+			<label kind="assignment" x="102" y="178">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="guard" x="102" y="76">x&gt;=3</label>
+			<label kind="assignment" x="102" y="93">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="select" x="102" y="-17">y : int[0,NUM_ITEM_TYPES-1]</label>
+			<label kind="synchronisation" x="102" y="0">ItemArrive!</label>
+			<label kind="assignment" x="102" y="17">x:=0, ITEM:=y</label>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<location id="id6" x="-59" y="-144">
+		</location>
+		<location id="id7" x="-59" y="-272">
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-187" y="-212">recordOff?</label>
+			<nail x="-102" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-8" y="-221">recordOn?</label>
+			<nail x="-17" y="-204"/>
+		</transition>
+	</template>
+	<template>
+		<name>ItemFeeder</name>
+		<declaration>// Place local declarations here.
+clock x;        //per element clock
+</declaration>
+		<location id="id8" x="-93" y="-246">
+		</location>
+		<location id="id9" x="-93" y="-340">
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-17" y="-315">x&gt;=23</label>
+			<label kind="synchronisation" x="-17" y="-298">ItemArrive?</label>
+			<nail x="-25" y="-255"/>
+			<nail x="-25" y="-332"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-85" y="-306">x:=0</label>
+			<nail x="-93" y="-263"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+//Item = Item();
+//ItemFeeder = ItemFeeder();
+// List one or more processes to be composed into a system.
+system Item, ItemFeeder, Controller;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
