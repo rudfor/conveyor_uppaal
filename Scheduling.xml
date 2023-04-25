@@ -10,6 +10,11 @@ bool R; //Recording on
 const int NUM_ITEMS=4;
 typedef int[0, NUM_ITEMS-1] t_id;
 
+// Belts
+const int FEEDER=1;
+typedef int[0, FEEDER-1] f_id;
+
+
 const int NUM_ITEM_TYPES=25;
 typedef scalar[NUM_ITEM_TYPES] s_t;
 
@@ -95,7 +100,7 @@ int ITEM;
 			<source ref="id5"/>
 			<target ref="id4"/>
 			<label kind="select" x="102" y="-17">y : int[0,NUM_ITEM_TYPES-1]</label>
-			<label kind="synchronisation" x="102" y="0">ItemArrive!</label>
+			<label kind="synchronisation" x="102" y="0">ItemArrive?</label>
 			<label kind="assignment" x="102" y="17">x:=0, ITEM:=y</label>
 		</transition>
 	</template>
@@ -105,83 +110,93 @@ int ITEM;
 clock x;        //per element clock
 int ItemIdentified;
 </declaration>
-		<location id="id6" x="-59" y="119">
+		<location id="id6" x="-59" y="127">
 		</location>
-		<location id="id7" x="-59" y="25">
+		<location id="id7" x="-59" y="51">
+			<name x="-153" y="17">ProcessVideo</name>
 		</location>
-		<location id="id8" x="-59" y="-76">
-			<label kind="invariant" x="-42" y="-85">x&lt;=5</label>
+		<location id="id8" x="-59" y="-25">
+			<name x="-187" y="-58">ReceiveRecording</name>
 		</location>
-		<location id="id9" x="-59" y="-178">
+		<location id="id9" x="-59" y="-102">
+			<name x="-110" y="-136">Record</name>
+			<label kind="invariant" x="-42" y="-111">x&lt;=5</label>
+		</location>
+		<location id="id10" x="-59" y="-178">
+			<name x="-136" y="-212">preRecord</name>
 			<label kind="invariant" x="-42" y="-186">x&lt;=9</label>
 		</location>
-		<location id="id10" x="-59" y="-272">
+		<location id="id11" x="-59" y="-272">
 		</location>
-		<init ref="id10"/>
-		<transition>
-			<source ref="id6"/>
-			<target ref="id10"/>
-			<nail x="-178" y="76"/>
-			<nail x="-178" y="-204"/>
-		</transition>
+		<init ref="id11"/>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="-51" y="42">ItemRead?</label>
-			<label kind="assignment" x="-51" y="59">ItemIdentified:=ItemDetected,
-array[ItemIdentified]++</label>
+			<label kind="assignment" x="-51" y="76">array[ItemIdentified]++</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id11"/>
+			<nail x="-204" y="85"/>
+			<nail x="-204" y="-229"/>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id7"/>
-			<label kind="synchronisation" x="-51" y="-42">recordOff!</label>
-			<label kind="assignment" x="-51" y="-25">x:=0, R=false</label>
+			<label kind="synchronisation" x="-51" y="-8">ItemRead?</label>
+			<label kind="assignment" x="-51" y="9">ItemIdentified:=ItemDetected</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id8"/>
-			<label kind="guard" x="-51" y="-161">x==9</label>
-			<label kind="assignment" x="-51" y="-127">x:=0, R=true</label>
+			<label kind="synchronisation" x="-51" y="-85">recordOff!</label>
+			<label kind="assignment" x="-51" y="-68">x:=0, R=false</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id9"/>
+			<label kind="guard" x="-51" y="-161">x==9</label>
+			<label kind="assignment" x="-51" y="-144">x:=0, R=true</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
 			<label kind="synchronisation" x="-51" y="-229">SignalUnbreached?</label>
 			<label kind="assignment" x="-51" y="-246">x:=0</label>
 		</transition>
 	</template>
 	<template>
 		<name>ItemFeeder</name>
-		<parameter>const int[0,1] belt</parameter>
+		<parameter>f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id11" x="-93" y="-246">
+		<location id="id12" x="-93" y="-246">
 		</location>
-		<location id="id12" x="-93" y="-340">
+		<location id="id13" x="-93" y="-340">
 		</location>
-		<init ref="id12"/>
+		<init ref="id13"/>
 		<transition>
-			<source ref="id11"/>
-			<target ref="id12"/>
+			<source ref="id12"/>
+			<target ref="id13"/>
 			<label kind="guard" x="-17" y="-314">x&gt;=23</label>
-			<label kind="synchronisation" x="-17" y="-297">ItemArrive?</label>
+			<label kind="synchronisation" x="-17" y="-297">ItemArrive!</label>
 			<nail x="-25" y="-263"/>
 			<nail x="-25" y="-323"/>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id11"/>
+			<source ref="id13"/>
+			<target ref="id12"/>
 			<label kind="assignment" x="-85" y="-306">x:=0</label>
 			<nail x="-93" y="-263"/>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
 //Item = Item();
-ItemFeeder0 = ItemFeeder(0);
+//ItemFeeder0 = ItemFeeder(0);
 //ItemFeeder1 = ItemFeeder(1);
 // List one or more processes to be composed into a system.
-system Item, ItemFeeder0, Controller;
+system Item, ItemFeeder, Controller;
     </system>
 	<queries>
 		<query>
