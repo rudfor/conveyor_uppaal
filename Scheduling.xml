@@ -3,21 +3,21 @@
 <nta>
 	<declaration>// Place global declarations here.
 
-bool S; //Sensor breach from laser
-bool R; //Recording on
-
-// Items
-const int NUM_ITEMS=5;
-typedef int[0, NUM_ITEMS-1] t_id;
-
-// Limit run
-int MAX_ITEMS=100;
-
 // Belts
 const int FEEDER=1;
 typedef int[0, FEEDER-1] f_id;
 
-const int NUM_ITEM_TYPES=5;
+bool S[FEEDER]; //Sensor breach from laser
+bool R[FEEDER]; //Recording on
+
+// Items
+const int NUM_ITEMS=1;
+typedef int[0, NUM_ITEMS-1] t_id;
+
+// Limit run
+int MAX_ITEMS=10;
+
+const int NUM_ITEM_TYPES=1;
 
 typedef scalar[NUM_ITEM_TYPES] s_t;
 
@@ -26,86 +26,106 @@ int ItemDetected;
 
 chan ItemArrive[2];
 //chan ItemArrive; //used by the user to set the bags on the feed
-chan SignalUnbreached; //used by the user to set the bags on the feed
-urgent chan ItemRead;
+//chan SignalUnbreached; //used by the user to set the bags on the feed
+//urgent chan ItemRead;
 
 
 
 urgent chan recordOn, recordOff; //used by the user to set the bags on the feed
 </declaration>
 	<template>
-		<name x="5" y="5">Item</name>
-		<parameter>t_id item_id, f_id feed_id</parameter>
-		<declaration>// Place local declarations here.
-clock x;        //per element clock
-int ITEM;
-//string item;</declaration>
-		<location id="id0" x="340" y="306">
-			<urgent/>
+		<name>Video</name>
+		<parameter>f_id feed_id</parameter>
+		<declaration>clock x;</declaration>
+		<location id="id0" x="0" y="68">
+			<name x="-25" y="76">Video_On</name>
 		</location>
-		<location id="id1" x="93" y="399">
-			<name x="110" y="374">LeftVideoZone</name>
-			<urgent/>
+		<location id="id1" x="0" y="0">
+			<name x="-10" y="-34">Video_Off</name>
 		</location>
-		<location id="id2" x="93" y="255">
-			<name x="17" y="221">VideoZone</name>
-			<label kind="invariant" x="102" y="229">x&lt;=15</label>
-		</location>
-		<location id="id3" x="93" y="153">
-			<name x="-25" y="127">PreVideoZone</name>
-			<label kind="invariant" x="110" y="144">x&lt;=5</label>
-		</location>
-		<location id="id4" x="93" y="59">
-			<name x="0" y="34">LaserBreach</name>
-			<label kind="invariant" x="110" y="51">x&lt;=5</label>
-		</location>
-		<location id="id5" x="93" y="-25">
-			<name x="102" y="-59">initial</name>
-		</location>
-		<init ref="id5"/>
+		<init ref="id1"/>
 		<transition>
 			<source ref="id0"/>
-			<target ref="id2"/>
-			<label kind="synchronisation" x="187" y="289">ItemRead!</label>
-			<label kind="assignment" x="187" y="306">ItemDetected:=ITEM</label>
-			<nail x="153" y="306"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="221" y="238">recordOff?</label>
-			<nail x="280" y="255"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-93" y="25">not R[feed_id]</label>
+			<nail x="-34" y="51"/>
+			<nail x="-34" y="17"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
-			<target ref="id5"/>
-			<nail x="-59" y="331"/>
-			<nail x="-59" y="34"/>
+			<target ref="id0"/>
+			<label kind="guard" x="42" y="25">R[feed_id]</label>
+			<label kind="assignment" x="42" y="42">x:=0</label>
+			<nail x="34" y="17"/>
+			<nail x="34" y="51"/>
 		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Item</name>
+		<parameter>t_id item_id, f_id feed_id</parameter>
+		<declaration>// Place local declarations here.
+clock t1;         //per element clock
+clock t2;        //from fully entering the video zone
+int ITEM;
+//string item;</declaration>
+		<location id="id2" x="102" y="195">
+			<urgent/>
+		</location>
+		<location id="id3" x="102" y="331">
+			<name x="119" y="306">LeftVideoZone</name>
+			<urgent/>
+		</location>
+		<location id="id4" x="102" y="263">
+			<name x="26" y="229">VideoZone</name>
+			<label kind="invariant" x="111" y="237">t1&lt;=20</label>
+		</location>
+		<location id="id5" x="102" y="145">
+			<name x="8" y="119">PreVideoZone</name>
+			<label kind="invariant" x="119" y="136">t1&lt;=5</label>
+		</location>
+		<location id="id6" x="102" y="51">
+			<name x="9" y="26">LaserBreach</name>
+			<label kind="invariant" x="119" y="43">t1&lt;=5</label>
+		</location>
+		<location id="id7" x="102" y="-42">
+			<name x="111" y="-76">initial</name>
+		</location>
+		<init ref="id7"/>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id1"/>
-			<label kind="guard" x="102" y="323">x==15</label>
+			<source ref="id5"/>
+			<target ref="id2"/>
+			<label kind="guard" x="111" y="153">t1==5</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
-			<target ref="id2"/>
-			<label kind="guard" x="102" y="178">x==5</label>
-			<label kind="assignment" x="102" y="195">x:=0</label>
+			<target ref="id7"/>
+			<nail x="0" y="263"/>
+			<nail x="0" y="17"/>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id3"/>
-			<label kind="guard" x="110" y="76">x&gt;=3</label>
-			<label kind="synchronisation" x="110" y="93">SignalUnbreached!</label>
-			<label kind="assignment" x="110" y="110">x:=0,S=false</label>
+			<label kind="guard" x="119" y="280">t1==20</label>
 		</transition>
 		<transition>
-			<source ref="id5"/>
+			<source ref="id2"/>
 			<target ref="id4"/>
-			<label kind="select" x="102" y="-17">y : int[0,NUM_ITEM_TYPES-1]</label>
-			<label kind="synchronisation" x="102" y="0">ItemArrive[feed_id]?</label>
-			<label kind="assignment" x="102" y="17">x:=0, ITEM:=y, S=true, MAX_ITEMS--</label>
+			<label kind="guard" x="111" y="212">t1==5</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="guard" x="119" y="68">t1&gt;=3</label>
+			<label kind="assignment" x="119" y="85">S[feed_id]=false, 
+t2:=0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="select" x="111" y="-34">y : int[0,NUM_ITEM_TYPES-1]</label>
+			<label kind="synchronisation" x="111" y="-17">ItemArrive[feed_id]?</label>
+			<label kind="assignment" x="111" y="0">t1:=0, ITEM:=y, 
+S[feed_id]=true, MAX_ITEMS--</label>
 		</transition>
 	</template>
 	<template>
@@ -115,59 +135,76 @@ int ITEM;
 clock x;        //per element clock
 int ItemIdentified;
 </declaration>
-		<location id="id6" x="-59" y="127">
+		<location id="id8" x="-306" y="-492">
+			<name x="-391" y="-517">Pass_laser</name>
 		</location>
-		<location id="id7" x="-59" y="51">
-			<name x="-153" y="17">ProcessVideo</name>
+		<location id="id9" x="-306" y="-212">
+			<name x="-297" y="-246">End_loop</name>
+			<urgent/>
 		</location>
-		<location id="id8" x="-59" y="-25">
-			<name x="-187" y="-58">ReceiveRecording</name>
+		<location id="id10" x="-306" y="-254">
+			<name x="-400" y="-288">ProcessVideo</name>
+			<urgent/>
 		</location>
-		<location id="id9" x="-59" y="-102">
-			<name x="-110" y="-136">Record</name>
-			<label kind="invariant" x="-42" y="-111">x&lt;=5</label>
+		<location id="id11" x="-306" y="-313">
+			<name x="-434" y="-346">ReceiveRecording</name>
+			<urgent/>
 		</location>
-		<location id="id10" x="-59" y="-178">
-			<name x="-136" y="-212">preRecord</name>
-			<label kind="invariant" x="-42" y="-186">x&lt;=9</label>
+		<location id="id12" x="-306" y="-373">
+			<name x="-357" y="-407">Record</name>
+			<label kind="invariant" x="-289" y="-382">x&lt;=5</label>
 		</location>
-		<location id="id11" x="-59" y="-272">
+		<location id="id13" x="-306" y="-441">
+			<name x="-383" y="-475">preRecord</name>
+			<label kind="invariant" x="-289" y="-449">x&lt;=9</label>
 		</location>
-		<init ref="id11"/>
-		<transition>
-			<source ref="id7"/>
-			<target ref="id6"/>
-			<label kind="assignment" x="-51" y="76">array[ItemIdentified]++</label>
-		</transition>
-		<transition>
-			<source ref="id6"/>
-			<target ref="id11"/>
-			<nail x="-204" y="85"/>
-			<nail x="-204" y="-229"/>
-		</transition>
+		<location id="id14" x="-306" y="-611">
+			<name x="-316" y="-645">Start_loop</name>
+		</location>
+		<location id="id15" x="-306" y="-551">
+			<name x="-383" y="-576">Recive_S</name>
+		</location>
+		<init ref="id14"/>
 		<transition>
 			<source ref="id8"/>
-			<target ref="id7"/>
-			<label kind="synchronisation" x="-51" y="-8">ItemRead?</label>
-			<label kind="assignment" x="-51" y="9">ItemIdentified:=ItemDetected</label>
+			<target ref="id13"/>
+			<label kind="assignment" x="-298" y="-484">x:=0</label>
 		</transition>
 		<transition>
-			<source ref="id9"/>
+			<source ref="id15"/>
 			<target ref="id8"/>
-			<label kind="synchronisation" x="-51" y="-85">recordOff!</label>
-			<label kind="assignment" x="-51" y="-68">x:=0, R=false</label>
+			<label kind="guard" x="-298" y="-534">not S[feed_id]</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id9"/>
-			<label kind="guard" x="-51" y="-161">x==9</label>
-			<label kind="assignment" x="-51" y="-144">x:=0, R=true</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id14"/>
+			<nail x="-442" y="-272"/>
+			<nail x="-442" y="-544"/>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="-51" y="-229">SignalUnbreached?</label>
-			<label kind="assignment" x="-51" y="-246">x:=0</label>
+			<label kind="assignment" x="-298" y="-296">ItemIdentified:=ItemDetected</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-298" y="-356">x:=0, R[feed_id]=false</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-298" y="-432">x==9</label>
+			<label kind="assignment" x="-298" y="-415">x:=0, R[feed_id]=true</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-298" y="-594">S[feed_id]</label>
 		</transition>
 	</template>
 	<template>
@@ -176,30 +213,30 @@ int ItemIdentified;
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id12" x="-144" y="-263">
+		<location id="id16" x="-136" y="-306">
 		</location>
-		<location id="id13" x="-110" y="-365">
+		<location id="id17" x="-136" y="-374">
 		</location>
-		<init ref="id13"/>
+		<init ref="id17"/>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id12"/>
-			<nail x="-153" y="-187"/>
-			<nail x="-76" y="-187"/>
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<nail x="-170" y="-272"/>
+			<nail x="-136" y="-272"/>
 		</transition>
 		<transition>
-			<source ref="id13"/>
-			<target ref="id12"/>
-			<label kind="guard" x="-246" y="-331">MAX_ITEMS==0</label>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-229" y="-357">MAX_ITEMS==0</label>
 		</transition>
 		<transition>
-			<source ref="id13"/>
-			<target ref="id13"/>
-			<label kind="guard" x="-17" y="-339">x&gt;=23 and MAX_ITEMS&gt;0</label>
-			<label kind="synchronisation" x="-17" y="-322">ItemArrive[feed_id]!</label>
-			<label kind="assignment" x="-17" y="-305">x:=0</label>
-			<nail x="-25" y="-288"/>
-			<nail x="-17" y="-373"/>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-93" y="-391">x&gt;=23 and MAX_ITEMS&gt;0</label>
+			<label kind="synchronisation" x="-93" y="-374">ItemArrive[feed_id]!</label>
+			<label kind="assignment" x="-93" y="-357">x:=0</label>
+			<nail x="-102" y="-340"/>
+			<nail x="-102" y="-399"/>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
@@ -207,7 +244,7 @@ clock x;        //per element clock
 //ItemFeeder0 = ItemFeeder(0);
 //ItemFeeder1 = ItemFeeder(1);
 // List one or more processes to be composed into a system.
-system Item, ItemFeeder, Controller;
+system Item, ItemFeeder, Controller, Video;
     </system>
 	<queries>
 		<query>
@@ -215,7 +252,15 @@ system Item, ItemFeeder, Controller;
 			<comment></comment>
 		</query>
 		<query>
-			<formula></formula>
+			<formula>A&lt;&gt;Item(0).LeftVideoZone</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Item(0,0).t1 ==20)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Video(0).</formula>
 			<comment></comment>
 		</query>
 	</queries>
