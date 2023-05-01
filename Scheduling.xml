@@ -28,6 +28,7 @@ chan ItemArrive[2];
 //chan ItemArrive; //used by the user to set the bags on the feed
 //chan SignalUnbreached; //used by the user to set the bags on the feed
 //urgent chan ItemRead;
+urgent chan next;
 
 
 
@@ -68,63 +69,55 @@ clock t1;         //per element clock
 clock t2;        //from fully entering the video zone
 int ITEM;
 //string item;</declaration>
-		<location id="id2" x="102" y="195">
-			<urgent/>
-		</location>
-		<location id="id3" x="102" y="331">
+		<location id="id2" x="102" y="331">
 			<name x="119" y="306">LeftVideoZone</name>
 			<urgent/>
 		</location>
-		<location id="id4" x="102" y="263">
-			<name x="26" y="229">VideoZone</name>
-			<label kind="invariant" x="111" y="237">t1&lt;=20</label>
+		<location id="id3" x="102" y="238">
+			<name x="26" y="204">VideoZone</name>
+			<label kind="invariant" x="119" y="229">t1&lt;=20</label>
 		</location>
-		<location id="id5" x="102" y="145">
-			<name x="8" y="119">PreVideoZone</name>
-			<label kind="invariant" x="119" y="136">t1&lt;=5</label>
+		<location id="id4" x="102" y="145">
+			<name x="0" y="119">PreVideoZone</name>
+			<label kind="invariant" x="119" y="136">t2&lt;=5</label>
 		</location>
-		<location id="id6" x="102" y="51">
+		<location id="id5" x="102" y="51">
 			<name x="9" y="26">LaserBreach</name>
-			<label kind="invariant" x="119" y="43">t1&lt;=5</label>
+			<label kind="invariant" x="119" y="42">t1&lt;=5</label>
 		</location>
-		<location id="id7" x="102" y="-42">
-			<name x="111" y="-76">initial</name>
+		<location id="id6" x="102" y="-85">
+			<name x="111" y="-119">initial</name>
 		</location>
-		<init ref="id7"/>
-		<transition>
-			<source ref="id5"/>
-			<target ref="id2"/>
-			<label kind="guard" x="111" y="153">t1==5</label>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id7"/>
-			<nail x="0" y="263"/>
-			<nail x="0" y="17"/>
-		</transition>
+		<init ref="id6"/>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id3"/>
-			<label kind="guard" x="119" y="280">t1==20</label>
+			<label kind="guard" x="110" y="178">t2==5</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
-			<target ref="id4"/>
-			<label kind="guard" x="111" y="212">t1==5</label>
+			<target ref="id6"/>
+			<nail x="-34" y="289"/>
+			<nail x="-34" y="-8"/>
 		</transition>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id5"/>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="110" y="289">t1==20</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
 			<label kind="guard" x="119" y="68">t1&gt;=3</label>
 			<label kind="assignment" x="119" y="85">S[feed_id]=false, 
 t2:=0</label>
 		</transition>
 		<transition>
-			<source ref="id7"/>
-			<target ref="id6"/>
-			<label kind="select" x="111" y="-34">y : int[0,NUM_ITEM_TYPES-1]</label>
-			<label kind="synchronisation" x="111" y="-17">ItemArrive[feed_id]?</label>
-			<label kind="assignment" x="111" y="0">t1:=0, ITEM:=y, 
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="select" x="110" y="-59">y : int[0,NUM_ITEM_TYPES-1]</label>
+			<label kind="synchronisation" x="110" y="-42">ItemArrive[feed_id]?</label>
+			<label kind="assignment" x="110" y="-25">t1:=0, ITEM:=y, 
 S[feed_id]=true, MAX_ITEMS--</label>
 		</transition>
 	</template>
@@ -133,78 +126,87 @@ S[feed_id]=true, MAX_ITEMS--</label>
 		<parameter>f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
+clock y;        //per element clock
+clock z;        //per element clock
+
 int ItemIdentified;
 </declaration>
-		<location id="id8" x="-306" y="-492">
-			<name x="-391" y="-517">Pass_laser</name>
-		</location>
-		<location id="id9" x="-306" y="-212">
-			<name x="-297" y="-246">End_loop</name>
+		<location id="id7" x="-306" y="-144">
+			<name x="-297" y="-178">End_loop</name>
 			<urgent/>
 		</location>
-		<location id="id10" x="-306" y="-254">
-			<name x="-400" y="-288">ProcessVideo</name>
+		<location id="id8" x="-306" y="-221">
+			<name x="-400" y="-255">ProcessVideo</name>
 			<urgent/>
 		</location>
-		<location id="id11" x="-306" y="-313">
-			<name x="-434" y="-346">ReceiveRecording</name>
+		<location id="id9" x="-306" y="-297">
+			<name x="-434" y="-330">ReceiveRecording</name>
 			<urgent/>
 		</location>
-		<location id="id12" x="-306" y="-373">
+		<location id="id10" x="-306" y="-373">
 			<name x="-357" y="-407">Record</name>
 			<label kind="invariant" x="-289" y="-382">x&lt;=5</label>
 		</location>
-		<location id="id13" x="-306" y="-441">
-			<name x="-383" y="-475">preRecord</name>
-			<label kind="invariant" x="-289" y="-449">x&lt;=9</label>
+		<location id="id11" x="-306" y="-466">
+			<name x="-383" y="-500">preRecord</name>
+			<label kind="invariant" x="-289" y="-474">x&lt;=9</label>
 		</location>
-		<location id="id14" x="-306" y="-611">
-			<name x="-316" y="-645">Start_loop</name>
+		<location id="id12" x="-306" y="-680">
+			<name x="-316" y="-714">Start_loop</name>
 		</location>
-		<location id="id15" x="-306" y="-551">
-			<name x="-383" y="-576">Recive_S</name>
+		<location id="id13" x="-306" y="-561">
+			<name x="-382" y="-578">Recive_S</name>
+			<urgent/>
 		</location>
-		<init ref="id14"/>
+		<init ref="id12"/>
 		<transition>
-			<source ref="id8"/>
-			<target ref="id13"/>
-			<label kind="assignment" x="-298" y="-484">x:=0</label>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-297" y="-535">not S[feed_id]</label>
+			<label kind="assignment" x="-297" y="-518">x:=0</label>
 		</transition>
 		<transition>
-			<source ref="id15"/>
+			<source ref="id8"/>
+			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id12"/>
+			<nail x="-442" y="-239"/>
+			<nail x="-442" y="-561"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
 			<target ref="id8"/>
-			<label kind="guard" x="-298" y="-534">not S[feed_id]</label>
+			<label kind="assignment" x="-298" y="-280">ItemIdentified:=ItemDetected</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id9"/>
-		</transition>
-		<transition>
-			<source ref="id9"/>
-			<target ref="id14"/>
-			<nail x="-442" y="-272"/>
-			<nail x="-442" y="-544"/>
+			<label kind="assignment" x="-298" y="-356">x:=0, R[feed_id]=false</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id10"/>
-			<label kind="assignment" x="-298" y="-296">ItemIdentified:=ItemDetected</label>
-		</transition>
-		<transition>
-			<source ref="id12"/>
-			<target ref="id11"/>
-			<label kind="assignment" x="-298" y="-356">x:=0, R[feed_id]=false</label>
-		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id12"/>
-			<label kind="guard" x="-298" y="-432">x==9</label>
+			<label kind="guard" x="-298" y="-457">x==9</label>
 			<label kind="assignment" x="-298" y="-415">x:=0, R[feed_id]=true</label>
 		</transition>
 		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-297" y="-637">S[feed_id]</label>
+		</transition>
+	</template>
+	<template>
+		<name>Next</name>
+		<location id="id14" x="0" y="-25">
+		</location>
+		<init ref="id14"/>
+		<transition>
 			<source ref="id14"/>
-			<target ref="id15"/>
-			<label kind="guard" x="-298" y="-594">S[feed_id]</label>
+			<target ref="id14"/>
+			<nail x="76" y="-67"/>
+			<nail x="76" y="0"/>
 		</transition>
 	</template>
 	<template>
@@ -213,25 +215,25 @@ int ItemIdentified;
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id16" x="-136" y="-306">
+		<location id="id15" x="-136" y="-306">
 		</location>
-		<location id="id17" x="-136" y="-374">
+		<location id="id16" x="-136" y="-374">
 		</location>
-		<init ref="id17"/>
+		<init ref="id16"/>
 		<transition>
-			<source ref="id16"/>
-			<target ref="id16"/>
+			<source ref="id15"/>
+			<target ref="id15"/>
 			<nail x="-170" y="-272"/>
 			<nail x="-136" y="-272"/>
 		</transition>
 		<transition>
-			<source ref="id17"/>
-			<target ref="id16"/>
+			<source ref="id16"/>
+			<target ref="id15"/>
 			<label kind="guard" x="-229" y="-357">MAX_ITEMS==0</label>
 		</transition>
 		<transition>
-			<source ref="id17"/>
-			<target ref="id17"/>
+			<source ref="id16"/>
+			<target ref="id16"/>
 			<label kind="guard" x="-93" y="-391">x&gt;=23 and MAX_ITEMS&gt;0</label>
 			<label kind="synchronisation" x="-93" y="-374">ItemArrive[feed_id]!</label>
 			<label kind="assignment" x="-93" y="-357">x:=0</label>
@@ -252,7 +254,7 @@ system Item, ItemFeeder, Controller, Video;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A&lt;&gt;Item(0).LeftVideoZone</formula>
+			<formula>E&lt;&gt; Item(0,0).LeftVideoZone</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -260,7 +262,11 @@ system Item, ItemFeeder, Controller, Video;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Video(0).</formula>
+			<formula>E&lt;&gt; Video(0).Video_On</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Video(0).Video_Off</formula>
 			<comment></comment>
 		</query>
 	</queries>
