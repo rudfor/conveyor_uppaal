@@ -11,7 +11,7 @@ bool S[FEEDER]; //Sensor breach from laser
 bool R[FEEDER]; //Recording on
 
 // Items
-const int NUM_ITEMS=1;
+const int NUM_ITEMS=2;
 typedef int[0, NUM_ITEMS-1] t_id;
 
 // Limit run
@@ -279,11 +279,27 @@ system Item, ItemFeeder, Controller, Video;</system>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[] (Video(0).Finish imply ( (Video(0).x &gt;=4) and Item(0,0).VideoZone )  )</formula>
+			<formula>A[] (forall(j:f_id) (forall(i:t_id) Video(j).Finish and Item(i,j).VideoZone) imply ( Video(j).x &gt;=4 ))</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; ((Item(0,0).VideoZone and Video(0).x &lt;4 and Video(0).Finish))</formula>
+			<formula>A[] (forall(i:t_id) Video(0).Finish and Item(i,0).VideoZone) imply ( Video(0).x &gt;=4 )</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (Video(0).Finish and Item(0,0).VideoZone) imply ( Video(0).x &gt;=4 )</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not ((Item(0,0).VideoZone and Video(0).x &lt;4 and Video(0).Finish))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
 			<comment></comment>
 		</query>
 		<query>
