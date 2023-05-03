@@ -29,7 +29,7 @@ chan ItemArrive[2];
 //chan SignalUnbreached; //used by the user to set the bags on the feed
 //urgent chan ItemRead;
 urgent chan next;
-urgent chan a;
+urgent broadcast chan go;
 
 
 urgent chan recordOn, recordOff; //used by the user to set the bags on the feed
@@ -57,11 +57,13 @@ urgent chan recordOn, recordOff; //used by the user to set the bags on the feed
 			<source ref="id0"/>
 			<target ref="id2"/>
 			<label kind="guard" x="-93" y="25">not R[feed_id]</label>
+			<label kind="synchronisation" x="-76" y="42">go!</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
 			<label kind="guard" x="42" y="25">R[feed_id]</label>
+			<label kind="synchronisation" x="42" y="8">go!</label>
 			<label kind="assignment" x="42" y="42">x:=0</label>
 			<nail x="34" y="17"/>
 			<nail x="34" y="51"/>
@@ -177,8 +179,9 @@ int ItemIdentified;
 		<transition>
 			<source ref="id15"/>
 			<target ref="id13"/>
-			<label kind="guard" x="-297" y="-535">not S[feed_id]</label>
-			<label kind="assignment" x="-297" y="-518">x:=0</label>
+			<label kind="guard" x="-280" y="-549">not S[feed_id]</label>
+			<label kind="synchronisation" x="-280" y="-518">go!</label>
+			<label kind="assignment" x="-280" y="-532">x:=0</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
@@ -205,21 +208,15 @@ int ItemIdentified;
 		<transition>
 			<source ref="id14"/>
 			<target ref="id15"/>
-			<label kind="guard" x="-297" y="-637">S[feed_id]</label>
+			<label kind="guard" x="-289" y="-654">S[feed_id]</label>
+			<label kind="synchronisation" x="-281" y="-637">go!</label>
 		</transition>
 	</template>
 	<template>
 		<name>Next</name>
-		<location id="id16" x="0" y="-25">
+		<location id="id16" x="-178" y="-212">
 		</location>
 		<init ref="id16"/>
-		<transition>
-			<source ref="id16"/>
-			<target ref="id16"/>
-			<label kind="synchronisation" x="18" y="-63">a!</label>
-			<nail x="76" y="-67"/>
-			<nail x="76" y="0"/>
-		</transition>
 	</template>
 	<template>
 		<name>ItemFeeder</name>
@@ -258,7 +255,7 @@ clock x;        //per element clock
 //ItemFeeder0 = ItemFeeder(0);
 //ItemFeeder1 = ItemFeeder(1);
 // List one or more processes to be composed into a system.
-system Item, ItemFeeder, Controller, Video, Next;</system>
+system Item, ItemFeeder, Controller, Video;</system>
 	<queries>
 		<query>
 			<formula>A[] not deadlock</formula>
@@ -294,6 +291,10 @@ system Item, ItemFeeder, Controller, Video, Next;</system>
 		</query>
 		<query>
 			<formula>Video(0).Video_On --&gt; Video(0).x &lt;=3</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
 			<comment></comment>
 		</query>
 	</queries>
