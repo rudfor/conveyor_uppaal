@@ -39,13 +39,13 @@ urgent chan recordOn, recordOff; //used by the user to set the bags on the feed
 		<parameter>f_id feed_id</parameter>
 		<declaration>clock x;</declaration>
 		<location id="id0" x="0" y="68">
-			<name x="-25" y="76">Video_On</name>
+			<name x="-25" y="76">On</name>
 		</location>
 		<location id="id1" x="0" y="0">
-			<name x="-10" y="-34">Video_Off</name>
+			<name x="-8" y="-34">Off</name>
 		</location>
 		<location id="id2" x="-68" y="0">
-			<name x="-119" y="-34">Video_Finish</name>
+			<name x="-119" y="-34">Finish</name>
 			<urgent/>
 		</location>
 		<init ref="id1"/>
@@ -140,10 +140,10 @@ clock z;        //per element clock
 int ItemIdentified;
 </declaration>
 		<location id="id8" x="-306" y="-170">
-			<name x="-433" y="-195">Send_Identification</name>
+			<name x="-433" y="-195">SendIdentification</name>
 		</location>
 		<location id="id9" x="-306" y="-102">
-			<name x="-297" y="-136">End_loop</name>
+			<name x="-297" y="-136">EndLoop</name>
 			<urgent/>
 		</location>
 		<location id="id10" x="-306" y="-238">
@@ -151,6 +151,7 @@ int ItemIdentified;
 		</location>
 		<location id="id11" x="-306" y="-297">
 			<name x="-399" y="-323">ReceiveData</name>
+			<committed/>
 		</location>
 		<location id="id12" x="-306" y="-373">
 			<name x="-357" y="-407">Record</name>
@@ -161,7 +162,7 @@ int ItemIdentified;
 			<label kind="invariant" x="-289" y="-474">x&lt;=9</label>
 		</location>
 		<location id="id14" x="-306" y="-680">
-			<name x="-316" y="-714">Start_loop</name>
+			<name x="-316" y="-714">StartLoop</name>
 		</location>
 		<location id="id15" x="-306" y="-561">
 			<name x="-382" y="-578">Recive_S</name>
@@ -170,11 +171,11 @@ int ItemIdentified;
 		<transition>
 			<source ref="id8"/>
 			<target ref="id9"/>
+			<label kind="synchronisation" x="-297" y="-153">go!</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id8"/>
-			<label kind="assignment" x="-297" y="-221">ItemIdentified:=ItemDetected</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -266,35 +267,39 @@ system Item, ItemFeeder, Controller, Video;</system>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Item(0,0).t1 ==20)</formula>
+			<formula>E&lt;&gt;(Item(0,0).LeftVideoZone and Item(0,0).t1 ==20)</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Video(0).Video_On</formula>
+			<formula>E&lt;&gt; Video(0).On</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Video(0).Video_Off</formula>
+			<formula>E&lt;&gt; Video(0).Off</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt;(Item(0,0).LeftVideoZone and Video(0).Video_Finish and Video(0).x &lt;4 )</formula>
+			<formula>A[] (Video(0).Finish imply ( (Video(0).x &gt;=4) and Item(0,0).VideoZone )  )</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Video(0).Video_Off and Video(0).x &lt;=3)</formula>
+			<formula>E&lt;&gt; ((Item(0,0).VideoZone and Video(0).x &lt;4 and Video(0).Finish))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Video(0).Off and Video(0).x &lt;=3)</formula>
 			<comment>Should also be false. </comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Video(0).Video_On)</formula>
+			<formula>E&lt;&gt; (Item(0,0).LeftVideoZone and Video(0).On)</formula>
 			<comment>Should be false! Having an Item that have left the video zone, and still recording.</comment>
 		</query>
 		<query>
-			<formula>Video(0).Video_On --&gt; Video(0).x &lt;=3</formula>
+			<formula>Video(0).On --&gt; Video(0).x &lt;=3</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula></formula>
+			<formula>E&lt;&gt;(Item(0,0).LeftVideoZone and Video(0).Finish and Video(0).x &lt;4 )</formula>
 			<comment></comment>
 		</query>
 	</queries>
