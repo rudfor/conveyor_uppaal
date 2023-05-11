@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+// Process identifiers (determines priority, 0 highest priority)
+const int N = 3;
+typedef int[0,N-1] PID;
+
+// Scheduling parameters
+const int T[PID] = {2, 3, 6};		// Periods
+const int D[PID] = {2, 3, 6};		// Deadlines
+const int C[PID] = {1, 1, 1};		// Execution times 
+
+// Scheduling variables and signals
+bool pending[PID];	// pending to send "done" to scheduler
+chan run[PID];		// Schedule
+chan preempt[PID];	// Preempt
+chan ready[PID];	// Process ready to run
+chan done;		// Process done (must be current)
+
+broadcast chan poll;
+
+urgent chan go;
+
+</declaration>
+	<template>
+		<name x="5" y="5">Scheduler</name>
+		<declaration>/*
+  In order to avoid overapproximation, it seems  necessary at any 	
+  scheduling point to let all scheduling signals get through before 
+  making a scheduling decision.
+
+  Therefore, a "poll" is broadcasted to let any process indicate 
+  its wish to start or terminate by setting pending[i].	
+*/
+
+bool rdy[PID];		// Process i ready to run
+int [0,N] cur = N;	// Currently scheduled process
+int [0,N] next;		// Next process to be scheduled
+
+int maxprio() {
+  for (id:PID) if (rdy[id]) return id;
+  return N;
+}
+
+bool nopending() {
+  for (id:PID) if (pending[id]) return false;
+  return true;
+}</declaration>
+		<location id="id0" x="192" y="-224">
+			<committed/>
+		</location>
+		<location id="id1" x="-320" y="-224">
+			<name x="-400" y="-208">Running</name>
+		</location>
+		<location id="id2" x="-64" y="-128">
+			<committed/>
+		</location>
+		<location id="id3" x="-64" y="-224">
+			<committed/>
+		</location>
+		<location id="id4" x="-64" y="-320">
+			<name x="-144" y="-312">Gathering</name>
+			<urgent/>
+		</location>
+		<location id="id5" x="-320" y="-320">
+			<committed/>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-184" y="-408">done?</label>
+			<label kind="assignment" x="-312" y="-392">rdy[cur] = false, cur = N</label>
+			<nail x="-64" y="-336"/>
+			<nail x="-64" y="-416"/>
+			<nail x="-128" y="-416"/>
+			<nail x="-128" y="-352"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-56" y="-184">next &lt; N &amp;&amp; cur==N</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-8" y="-216">cur &lt; N &amp;&amp; next != cur</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-304" y="-288">done?</label>
+			<label kind="assignment" x="-304" y="-272">rdy[cur] = false, cur = N</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-272" y="-216">next == N or next == cur</label>
+			<label kind="assignment" x="-232" y="-200">cur = next</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-272" y="-152">run[next]!</label>
+			<label kind="assignment" x="-192" y="-152">cur = next</label>
+			<nail x="-320" y="-128"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-216" y="-344">poll!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<label kind="select" x="48" y="-376">id:PID</label>
+			<label kind="synchronisation" x="48" y="-360">ready[id]?</label>
+			<label kind="assignment" x="48" y="-344">rdy[id] = true</label>
+			<nail x="0" y="-384"/>
+			<nail x="32" y="-384"/>
+			<nail x="32" y="-320"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id5"/>
+			<label kind="select" x="-456" y="-312">id:PID</label>
+			<label kind="synchronisation" x="-480" y="-288">ready[id]?</label>
+			<label kind="assignment" x="-496" y="-264">rdy[id] = true</label>
+			<nail x="-384" y="-224"/>
+			<nail x="-384" y="-320"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="24" y="-152">preempt[cur]!</label>
+			<nail x="192" y="-128"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-56" y="-296">nopending()</label>
+			<label kind="assignment" x="-56" y="-280">next = maxprio()</label>
+		</transition>
+	</template>
+	<template>
+		<name>Dummy</name>
+		<location id="id6" x="-192" y="-96">
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-304" y="-104">poll?</label>
+			<label kind="comments" x="-252" y="-66">Dummy to ensure that polling is possible at any time.</label>
+			<nail x="-256" y="-128"/>
+			<nail x="-256" y="-64"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-120" y="-112">go!</label>
+			<nail x="-128" y="-128"/>
+			<nail x="-128" y="-64"/>
+		</transition>
+	</template>
+	<template>
+		<name>Process</name>
+		<parameter>PID id</parameter>
+		<declaration>clock x;		// For periodic releases
+clock cpu;		// Consumed CPU-time</declaration>
+		<location id="id7" x="-416" y="288">
+			<committed/>
+		</location>
+		<location id="id8" x="-416" y="96">
+			<committed/>
+		</location>
+		<location id="id9" x="-256" y="192">
+			<committed/>
+		</location>
+		<location id="id10" x="-256" y="-32">
+			<name x="-248" y="-64">Ready</name>
+			<label kind="invariant" x="-248" y="-24">cpu'==0</label>
+		</location>
+		<location id="id11" x="-416" y="-32" color="#ff0000">
+			<name x="-472" y="-64">Error</name>
+		</location>
+		<location id="id12" x="-256" y="288">
+			<name x="-312" y="264">Done</name>
+			<label kind="invariant" x="-240" y="296">x &lt;= T[id]</label>
+		</location>
+		<location id="id13" x="-416" y="-160">
+			<urgent/>
+		</location>
+		<location id="id14" x="-256" y="96">
+			<name x="-240" y="64">Running</name>
+			<label kind="invariant" x="-232" y="104">cpu'==1 &amp;&amp; cpu &lt;= C[id]</label>
+		</location>
+		<location id="id15" x="-256" y="-160">
+			<name x="-288" y="-200">Released</name>
+			<committed/>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-408" y="328">x == T[id]</label>
+			<label kind="assignment" x="-408" y="360">pending[id] = true</label>
+			<nail x="-416" y="352"/>
+			<nail x="-320" y="352"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-408" y="200">x &lt; T[id]</label>
+			<nail x="-416" y="224"/>
+			<nail x="-320" y="224"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-384" y="264">poll?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-408" y="136">cpu==C[id]</label>
+			<label kind="assignment" x="-408" y="160">pending[id] = true</label>
+			<nail x="-416" y="160"/>
+			<nail x="-320" y="160"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-416" y="8">cpu &lt; C[id]</label>
+			<nail x="-416" y="32"/>
+			<nail x="-320" y="32"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-384" y="72">poll?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id9"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-368" y="-56">x &gt; D[id]</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-248" y="16">run[id]?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-120" y="16">preempt[id]?</label>
+			<nail x="-128" y="96"/>
+			<nail x="-128" y="-32"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-384" y="-24">x &gt; D[id]</label>
+			<nail x="-320" y="-32"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-112" y="296">x== T[id]</label>
+			<nail x="96" y="288"/>
+			<nail x="96" y="-160"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-248" y="216">done!</label>
+			<label kind="assignment" x="-248" y="232">pending[id] = false</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id15"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-240" y="-120">ready[id]!</label>
+			<label kind="assignment" x="-240" y="-104">x = 0, cpu = 0, pending[id] = false</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+// Process is auto-instatiated using the PID type
+
+system Scheduler, Process, Dummy;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment>Sanity check: system should not enter a (time-) deadlock
+			</comment>
+		</query>
+		<query>
+			<formula>A[] not Process(2).Error
+			</formula>
+			<comment>Lowest priority process is schedulable.
+			</comment>
+		</query>
+	</queries>
+</nta>
