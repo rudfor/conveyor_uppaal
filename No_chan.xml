@@ -176,6 +176,7 @@ int ItemIdentified;
 		<transition>
 			<source ref="id10"/>
 			<target ref="id8"/>
+			<label kind="synchronisation" x="-306" y="-221">go!</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -279,15 +280,7 @@ system Item, ItemFeeder, Controller, Video;</system>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[] (forall(j:f_id) (forall(i:t_id) Video(j).Finish and Item(i,j).VideoZone) imply ( Video(j).x &gt;=4 ))</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A[] (forall(i:t_id) Video(0).Finish and Item(i,0).VideoZone) imply ( Video(0).x &gt;=4 )</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A[] (Video(0).Finish and Item(0,0).VideoZone) imply ( Video(0).x &gt;=4 )</formula>
+			<formula>A[] (Video(0).Finish imply ( (Video(0).x &gt;=4) and (Item(0,0).VideoZone or Item(0,1).VideoZone )  )</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -295,11 +288,7 @@ system Item, ItemFeeder, Controller, Video;</system>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; not ((Item(0,0).VideoZone and Video(0).x &lt;4 and Video(0).Finish))</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
+			<formula>E&lt;&gt; ((Item(0,0).VideoZone and Video(0).x &lt;4 and Video(0).Finish))</formula>
 			<comment></comment>
 		</query>
 		<query>
