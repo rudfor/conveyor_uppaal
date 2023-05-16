@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<times>
+    <system>
+        <declarations/>
+    </system>
+    <tasktable>
+        <task C="1" D="15" P="1" T="25" behaviour="P" name="A_RecordOn"/>
+        <task C="1" D="19" O="5" P="1" T="25" behaviour="P" name="A_RecordOff"/>
+        <task C="1" D="15" T="25" behaviour="P" name="B_RecordOn"/>
+        <task C="1" D="19" O="5" T="25" behaviour="P" name="B_RecordOff"/>
+        <task C="5" D="25" P="1" T="25" behaviour="P" name="A_ProcessVideo"/>
+        <task C="5" D="25" T="25" behaviour="P" name="B_ProcessVideo"/>
+    </tasktable>
+    <precgraph>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="100" x="250" y="150"/>
+                            <misc color="d8cdff" id="0"/>
+                        </object>
+                        <label text="A_RecordOn" x="265" y="160"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="100" x="400" y="150"/>
+                            <misc color="d8cdff" id="2"/>
+                        </object>
+                        <label text="A_RecordOff" x="411" y="160"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precedence>
+            <edge fromport="2" fromvertex="0" toport="1" tovertex="2">
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics w="80" x="300" y="170"/>
+                            <misc id="5"/>
+                        </object>
+                        <label align="left" editable="false" visible="false"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                    <nail cursor="12" id="0" x="347" y="167"/>
+                    <nail cursor="12" id="1" x="397" y="167"/>
+                </nailcontainer>
+            </edge>
+        </precedence>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="100" x="250" y="230"/>
+                            <misc color="d8cdff" id="6"/>
+                        </object>
+                        <label text="B_RecordOn" x="264" y="243"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="100" x="400" y="230"/>
+                            <misc color="d8cdff" id="7"/>
+                        </object>
+                        <label text="B_RecordOff" x="415" y="240"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precedence>
+            <edge fromport="2" fromvertex="6" toport="1" tovertex="7">
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics w="80" x="300" y="250"/>
+                            <misc id="8"/>
+                        </object>
+                        <label align="left" editable="false" visible="false"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                    <nail cursor="12" id="0" x="347" y="247"/>
+                    <nail cursor="12" id="1" x="397" y="247"/>
+                </nailcontainer>
+            </edge>
+        </precedence>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="110" x="550" y="150"/>
+                            <misc color="d8cdff" id="9"/>
+                        </object>
+                        <label text="A_ProcessVideo" x="555" y="160"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precnode>
+            <portcontainer>
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics h="40" w="110" x="550" y="230"/>
+                            <misc color="d8cdff" id="10"/>
+                        </object>
+                        <label text="B_ProcessVideo" x="558" y="244"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                </nailcontainer>
+            </portcontainer>
+        </precnode>
+        <precedence>
+            <edge fromport="2" fromvertex="2" toport="1" tovertex="9">
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics w="70" x="480" y="170"/>
+                            <misc id="11"/>
+                        </object>
+                        <label align="left" editable="false" visible="false"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                    <nail cursor="12" id="0" x="497" y="167"/>
+                    <nail cursor="12" id="1" x="547" y="167"/>
+                </nailcontainer>
+            </edge>
+        </precedence>
+        <precedence>
+            <edge fromport="2" fromvertex="7" toport="1" tovertex="10">
+                <nailcontainer>
+                    <labelcontainer>
+                        <object>
+                            <metrics w="70" x="480" y="250"/>
+                            <misc id="12"/>
+                        </object>
+                        <label align="left" editable="false" visible="false"/>
+                        <font name="SansSerif"/>
+                    </labelcontainer>
+                    <nail cursor="12" id="0" x="497" y="247"/>
+                    <nail cursor="12" id="1" x="547" y="247"/>
+                </nailcontainer>
+            </edge>
+        </precedence>
+    </precgraph>
+</times>
