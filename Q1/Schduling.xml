@@ -4,35 +4,29 @@
 	<declaration>// Place global declarations here.
 
 // Belts
-const int FEEDER=1;             // Controller, Feed Belt
+const int FEEDER=1;
 typedef int[0, FEEDER-1] f_id;
 
-// Signals from Sensor Per Controller
 bool S[FEEDER]; //Sensor breach from laser
 bool R[FEEDER]; //Recording on
 
-// Items Grouped per FeedBelt to reduce tree complexity
+// Items
 const int NUM_ITEMS=2;
 typedef int[0, NUM_ITEMS-1] t_id;
 
-// Limit run - Set Maximum number of itterations to avoid infinite loop and check for Deadlock 
+// Limit run
 int MAX_ITEMS=10;
 int ITEM_COUNT=0;
 
-// Counter for number of recordings
 int RECORD =0;
 
-// Allow multiple types of products for identification
 const int NUM_ITEM_TYPES=1;
+
 typedef scalar[NUM_ITEM_TYPES] s_t;
 
-// Coutner for Identified Objects - removed to avoid complexity
 int array[NUM_ITEM_TYPES];
+int ItemDetected;
 
-//int ItemDetected;
-
-
-// Channels Decrlarations
 chan ItemArrive[FEEDER];
 
 urgent broadcast chan go;
@@ -242,52 +236,34 @@ R[feed_id]=true</label>
 		</transition>
 	</template>
 	<template>
-		<name>Scheduler</name>
-		<declaration>
-clock x;        // Scheduler Clock
-</declaration>
-		<location id="id16" x="-510" y="-663">
-			<name x="-501" y="-689">Idle</name>
-		</location>
-		<location id="id17" x="-510" y="-748">
-			<name x="-544" y="-773">Init</name>
-			<committed/>
-		</location>
-		<init ref="id17"/>
-		<transition>
-			<source ref="id17"/>
-			<target ref="id16"/>
-		</transition>
-	</template>
-	<template>
 		<name>ItemFeeder</name>
 		<parameter>f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id18" x="-136" y="-331">
+		<location id="id16" x="-136" y="-331">
 			<label kind="comments" x="-110" y="-348">Limit number of itterations for 
 simulation by creating a "deadend"</label>
 		</location>
-		<location id="id19" x="-136" y="-408">
+		<location id="id17" x="-136" y="-408">
 			<label kind="comments" x="-144" y="-493">P2: The minimum distance 
       between item arrivals is 2.3 s</label>
 		</location>
-		<init ref="id19"/>
+		<init ref="id17"/>
 		<transition>
-			<source ref="id18"/>
-			<target ref="id18"/>
+			<source ref="id16"/>
+			<target ref="id16"/>
 			<nail x="-170" y="-297"/>
 			<nail x="-136" y="-297"/>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id18"/>
+			<source ref="id17"/>
+			<target ref="id16"/>
 			<label kind="guard" x="-127" y="-374">MAX_ITEMS&lt;=ITEM_COUNT</label>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id19"/>
+			<source ref="id17"/>
+			<target ref="id17"/>
 			<label kind="guard" x="-85" y="-442">x&gt;=sleep23 and
 MAX_ITEMS&gt;ITEM_COUNT</label>
 			<label kind="synchronisation" x="-85" y="-408">ItemArrive[feed_id]!</label>
@@ -301,7 +277,7 @@ MAX_ITEMS&gt;ITEM_COUNT</label>
 //ItemFeeder0 = ItemFeeder(0);
 //ItemFeeder1 = ItemFeeder(1);
 // List one or more processes to be composed into a system.
-system Item, Controller, ItemFeeder,  Video, Scheduler;</system>
+system Item, Controller, ItemFeeder,  Video;</system>
 	<queries>
 		<query>
 			<formula>A[] not deadlock</formula>
