@@ -314,36 +314,50 @@ void decrement(p_id pid)
     //else need == DELTA or need == INF 
 }
 </declaration>
-		<location id="id18" x="-510" y="-493">
+		<location id="id18" x="-994" y="-663">
+		</location>
+		<location id="id19" x="-510" y="-493">
 			<name x="-544" y="-459">Reschedule</name>
 			<label kind="invariant" x="-520" y="-476">x&lt;1</label>
 			<label kind="comments" x="-688" y="-433">Invariant ensures that all processes which are done 
 are handled before a reschedule is attempted.</label>
 			<committed/>
 		</location>
-		<location id="id19" x="-773" y="-663">
+		<location id="id20" x="-773" y="-663">
 			<committed/>
 		</location>
-		<location id="id20" x="-510" y="-663">
+		<location id="id21" x="-510" y="-663">
 			<name x="-501" y="-689">Run</name>
 			<label kind="invariant" x="-527" y="-646">x&lt;=1</label>
 		</location>
-		<location id="id21" x="-510" y="-748">
+		<location id="id22" x="-510" y="-748">
 			<name x="-544" y="-773">Init</name>
 			<label kind="invariant" x="-484" y="-756">x&lt;=4</label>
 			<committed/>
 		</location>
-		<init ref="id21"/>
+		<init ref="id22"/>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id20"/>
-			<label kind="guard" x="-765" y="-756">need[current]!=0</label>
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<nail x="-1054" y="-663"/>
+			<nail x="-1054" y="-629"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-977" y="-688">MAX_ITEMS&gt;=ITEM_COUNT</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="guard" x="-765" y="-773">need[current]!=0 and 
+MAX_ITEMS&lt;ITEM_COUNT</label>
 			<nail x="-774" y="-731"/>
 			<nail x="-587" y="-731"/>
 		</transition>
 		<transition>
-			<source ref="id18"/>
-			<target ref="id20"/>
+			<source ref="id19"/>
+			<target ref="id21"/>
 			<label kind="assignment" x="-467" y="-603">run[current] = false,
 current = maxprio(),
 run[current] = true</label>
@@ -351,28 +365,28 @@ run[current] = true</label>
 			<nail x="-484" y="-637"/>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id18"/>
+			<source ref="id21"/>
+			<target ref="id19"/>
 			<label kind="guard" x="-688" y="-595">maxprio() != current</label>
 			<label kind="synchronisation" x="-578" y="-578">go!</label>
 			<nail x="-544" y="-637"/>
 			<nail x="-544" y="-518"/>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id18"/>
+			<source ref="id20"/>
+			<target ref="id19"/>
 			<label kind="guard" x="-756" y="-518">need[current]==0</label>
 			<nail x="-773" y="-493"/>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id19"/>
+			<source ref="id21"/>
+			<target ref="id20"/>
 			<label kind="guard" x="-739" y="-688">x==1</label>
 			<label kind="assignment" x="-739" y="-663">x=0, decrement(current)</label>
 		</transition>
 		<transition>
-			<source ref="id21"/>
-			<target ref="id20"/>
+			<source ref="id22"/>
+			<target ref="id21"/>
 			<label kind="assignment" x="-501" y="-722">initialize()</label>
 		</transition>
 	</template>
@@ -382,29 +396,29 @@ run[current] = true</label>
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id22" x="-136" y="-331">
+		<location id="id23" x="-136" y="-331">
 			<label kind="comments" x="-110" y="-348">Limit number of itterations for 
 simulation by creating a "deadend"</label>
 		</location>
-		<location id="id23" x="-136" y="-408">
+		<location id="id24" x="-136" y="-408">
 			<label kind="comments" x="-110" y="-493">P2: The minimum distance 
       between item arrivals is 2.3 s</label>
 		</location>
-		<init ref="id23"/>
+		<init ref="id24"/>
 		<transition>
-			<source ref="id22"/>
-			<target ref="id22"/>
+			<source ref="id23"/>
+			<target ref="id23"/>
 			<nail x="-170" y="-297"/>
 			<nail x="-136" y="-297"/>
 		</transition>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id22"/>
+			<source ref="id24"/>
+			<target ref="id23"/>
 			<label kind="guard" x="-127" y="-374">MAX_ITEMS&lt;=ITEM_COUNT</label>
 		</transition>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id23"/>
+			<source ref="id24"/>
+			<target ref="id24"/>
 			<label kind="guard" x="-85" y="-450">ITEM_COUNT==0 or 
 (x&gt;=sleep23 and MAX_ITEMS&gt;ITEM_COUNT)</label>
 			<label kind="synchronisation" x="-85" y="-408">ItemArrive[feed_id]!</label>
