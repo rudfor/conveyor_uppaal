@@ -28,12 +28,9 @@ int array[NUM_ITEM_TYPES];
 int ItemDetected;
 
 chan ItemArrive[FEEDER];
-//chan ItemArrive; //used by the user to set the bags on the feed
-//chan SignalUnbreached; //used by the user to set the bags on the feed
-//urgent chan ItemRead;
-//urgent chan next;
+
 urgent broadcast chan go;
-urgent chan recordOn, recordOff; //used by the user to set the bags on the feed
+urgent chan recordOn, recordOff;
 
 //Sleeping time of the control and item feeder
 int sleep09 = 9; 
@@ -80,26 +77,25 @@ int sleep23 = 23; // Minimum delay between Item Arrival</declaration>
 		<name x="5" y="5">Item</name>
 		<parameter>t_id item_id, f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
-clock t1;         //per element clock
-clock t2;        //from fully entering the video zone
-//int ITEM;
-//string item;</declaration>
+clock t1;     //Time when Sensor Breach
+clock t2;     //Time when Sensor Clear
+</declaration>
 		<location id="id3" x="102" y="280">
 			<name x="119" y="255">LeftVideoZone</name>
-			<label kind="comments" x="229" y="263">Item: Enters video zone at t1+2.0 s</label>
+			<label kind="comments" x="229" y="263">Item: Leaves video zone at t1+2.0 s</label>
 			<urgent/>
 		</location>
 		<location id="id4" x="102" y="212">
-			<name x="26" y="178">VideoZone</name>
+			<name x="17" y="178">VideoZone</name>
 			<label kind="invariant" x="119" y="203">t1&lt;=20</label>
 			<label kind="comments" x="229" y="195">Item: Enters video zone at t2+0.5 s</label>
 		</location>
 		<location id="id5" x="102" y="144">
-			<name x="0" y="118">PreVideoZone</name>
+			<name x="0" y="110">PreVideoZone</name>
 			<label kind="invariant" x="119" y="135">t2&lt;=5</label>
 		</location>
 		<location id="id6" x="102" y="51">
-			<name x="9" y="26">LaserBreach</name>
+			<name x="8" y="17">LaserBreach</name>
 			<label kind="invariant" x="119" y="42">t1&lt;=5</label>
 			<label kind="comments" x="229" y="25">P1: Items block the laser beam 
       between 0.3 and 0.5 seconds 
@@ -145,8 +141,8 @@ S[feed_id]=true</label>
 		<name>Controller</name>
 		<parameter>f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
-clock x;        //per element clock
-clock y;        //total time
+clock x;        //From Sensor Clear
+clock y;        //from Sensor Breach
 
 //int ItemIdentified;
 </declaration>
@@ -167,6 +163,7 @@ clock y;        //total time
 		<location id="id12" x="-306" y="-322">
 			<name x="-365" y="-348">Record</name>
 			<label kind="invariant" x="-289" y="-331">x&lt;=sleep05</label>
+			<label kind="comments" x="-178" y="-331">sleep(0.5)</label>
 		</location>
 		<location id="id13" x="-306" y="-425">
 			<name x="-391" y="-450">preRecord</name>
@@ -199,7 +196,7 @@ clock y;        //total time
 			<label kind="assignment" x="-297" y="-484">x:=0</label>
 			<label kind="comments" x="-178" y="-501">Sensor Clear
 - reset clock x
-[in documentation referred to as t2]</label>
+[in Item referred to as t2]</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
@@ -222,10 +219,10 @@ R[feed_id]=false</label>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id12"/>
-			<label kind="guard" x="-297" y="-399">x==sleep09</label>
-			<label kind="assignment" x="-297" y="-382">x:=0,
+			<label kind="guard" x="-297" y="-408">x==sleep09</label>
+			<label kind="assignment" x="-297" y="-391">x:=0,
 R[feed_id]=true</label>
-			<label kind="comments" x="-178" y="-382">Record On</label>
+			<label kind="comments" x="-178" y="-391">Record On</label>
 		</transition>
 		<transition>
 			<source ref="id14"/>
@@ -235,7 +232,7 @@ R[feed_id]=true</label>
 			<label kind="assignment" x="-297" y="-578">y:=0</label>
 			<label kind="comments" x="-178" y="-595">Sensor Breached
 - reset clock y
-[in documentation referred to as t1]</label>
+[in Item referred to as t1]</label>
 		</transition>
 	</template>
 	<template>
