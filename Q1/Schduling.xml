@@ -148,6 +148,7 @@ clock y;        //from Sensor Breach
 </declaration>
 		<location id="id8" x="-306" y="-118">
 			<name x="-442" y="-144">SendIdentification</name>
+			<committed/>
 		</location>
 		<location id="id9" x="-306" y="-59">
 			<name x="-289" y="-67">EndLoop</name>
@@ -155,6 +156,7 @@ clock y;        //from Sensor Breach
 		</location>
 		<location id="id10" x="-306" y="-178">
 			<name x="-408" y="-203">ProcessVideo</name>
+			<label kind="invariant" x="-289" y="-187">x&lt;5</label>
 		</location>
 		<location id="id11" x="-306" y="-237">
 			<name x="-399" y="-263">ReceiveData</name>
@@ -186,7 +188,7 @@ clock y;        //from Sensor Breach
 		<transition>
 			<source ref="id10"/>
 			<target ref="id8"/>
-			<label kind="synchronisation" x="-297" y="-169">go!</label>
+			<label kind="guard" x="-297" y="-161">x==5</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -207,6 +209,7 @@ clock y;        //from Sensor Breach
 		<transition>
 			<source ref="id11"/>
 			<target ref="id10"/>
+			<label kind="assignment" x="-297" y="-221">x:=0</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>

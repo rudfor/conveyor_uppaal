@@ -4,15 +4,15 @@
         <declarations/>
     </system>
     <tasktable>
-        <task C="1" D="15" P="2" T="25" behaviour="P" name="A_RecordOn"/>
-        <task C="1" D="19" O="5" P="2" T="25" behaviour="P" name="A_RecordOff"/>
-        <task C="5" D="25" P="2" T="25" behaviour="P" name="A_ProcessVideo"/>
-        <task C="1" D="15" P="1" T="25" behaviour="P" name="B_RecordOn"/>
-        <task C="1" D="19" O="5" P="1" T="25" behaviour="P" name="B_RecordOff"/>
-        <task C="5" D="25" P="1" T="25" behaviour="P" name="B_ProcessVideo"/>
-        <task C="1" D="15" T="25" behaviour="P" name="C_RecordOn"/>
-        <task C="1" D="19" O="5" T="25" behaviour="P" name="C_RecordOff"/>
-        <task C="5" D="25" T="25" behaviour="P" name="C_ProcessVideo"/>
+        <task C="1" D="11" P="2" T="25" behaviour="P" name="A_RecordOn"/>
+        <task C="1" D="15" O="5" P="2" T="25" behaviour="P" name="A_RecordOff"/>
+        <task C="1" D="11" P="1" T="25" behaviour="P" name="B_RecordOn"/>
+        <task C="1" D="15" O="5" P="1" T="25" behaviour="P" name="B_RecordOff"/>
+        <task C="5" D="21" P="2" T="25" behaviour="P" name="A_ProcessVideo"/>
+        <task C="5" D="21" P="1" T="25" behaviour="P" name="B_ProcessVideo"/>
+        <task C="1" D="11" T="25" behaviour="P" name="C_RecordOn"/>
+        <task C="1" D="15" O="5" T="25" behaviour="P" name="C_RecordOff"/>
+        <task C="5" D="21" T="25" behaviour="P" name="C_ProcessVideo"/>
     </tasktable>
     <template>
         <name>A</name>
@@ -65,7 +65,7 @@
                     <nail cursor="12" id="1" x="407" y="272"/>
                 </nailcontainer>
             </edge>
-            <metrics lx="341" ly="276" sx="310" sy="270"/>
+            <metrics lx="341" ly="276" sx="341" sy="276"/>
             <misc assign="x:=0" showdetails="true"/>
         </transition>
         <location>
@@ -98,7 +98,7 @@
                     <nail cursor="12" id="1" x="607" y="272"/>
                 </nailcontainer>
             </edge>
-            <metrics lx="531" ly="275" sx="520" sy="275"/>
+            <metrics lx="531" ly="275" sx="531" sy="275"/>
             <misc guard="x1&gt;=recOn" showdetails="true"/>
         </transition>
     </template>
