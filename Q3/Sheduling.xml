@@ -4,7 +4,7 @@
 	<declaration>// Place global declarations here.
 
 // Belts
-const int N=1;        // Controller, Feed Belt
+const int N=2;        // Controller, Feed Belt
 typedef int[0, N-1] f_id;
 typedef int[0, N+1] p_id;     // Priority ID - Number of Controllers and one for Idle Controller 0 is highest priority
 
@@ -13,7 +13,7 @@ bool S[N]; //Sensor breach from laser
 bool R[N]; //Recording on
 
 // Items Grouped per FeedBelt to reduce tree complexity
-const int NUM_ITEMS=1;
+const int NUM_ITEMS=2;
 typedef int[0, NUM_ITEMS-1] t_id;
 
 // Limit run - Set Maximum number of itterations to avoid infinite loop and check for Deadlock 
@@ -45,9 +45,9 @@ int sleep05 = 5;
 int sleep23 = 23; // Minimum delay between Item Arrival
 
 // Scheduling parameters (only used by process 0)
-const int T[f_id] = {3};		// Periods 
-const int D[f_id] = {3};
-const int C[f_id] = {2};		// Execution times 
+//const int T[f_id] = {3};		// Periods 
+//const int D[f_id] = {3};
+//const int C[f_id] = {2};		// Execution times 
 
 const int MaxC  =  5;			// Maximum cputime used
 const int DELTA = -1;                   // Special CPU-time indicating a preemptable (almost) zero value
@@ -422,7 +422,7 @@ system Item, Controller, ItemFeeder,  Video, Scheduler;</system>
 	<queries>
 		<query>
 			<formula>A[] not deadlock</formula>
-			<comment></comment>
+			<comment>Sanity check: system should not enter a (time-) deadlock</comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; Item(0,0).LeftVideoZone</formula>
