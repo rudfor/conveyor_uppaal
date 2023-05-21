@@ -4,37 +4,30 @@
 	<declaration>// Place global declarations here.
 
 // Belts
-const int N=2;        // Controller, Feed Belt
-typedef int[0, N-1] f_id;
-typedef int[0, N+1] p_id;     // Priority ID - Number of Controllers and one for Idle Controller 0 is highest priority
+const int FEEDER=1;
+typedef int[0, FEEDER-1] f_id;
 
-// Signals from Sensor Per Controller
-bool S[N]; //Sensor breach from laser
-bool R[N]; //Recording on
+bool S[FEEDER]; //Sensor breach from laser
+bool R[FEEDER]; //Recording on
 
-// Items Grouped per FeedBelt to reduce tree complexity
+// Items
 const int NUM_ITEMS=2;
 typedef int[0, NUM_ITEMS-1] t_id;
 
-// Limit run - Set Maximum number of itterations to avoid infinite loop and check for Deadlock 
+// Limit run
 int MAX_ITEMS=10;
 int ITEM_COUNT=0;
 
-// Counter for number of recordings
 int RECORD =0;
 
-// Allow multiple types of products for identification
 const int NUM_ITEM_TYPES=1;
+
 typedef scalar[NUM_ITEM_TYPES] s_t;
 
-// Coutner for Identified Objects - removed to avoid complexity
 int array[NUM_ITEM_TYPES];
+int ItemDetected;
 
-//int ItemDetected;
-
-
-// Channels Decrlarations
-chan ItemArrive[N];
+chan ItemArrive[FEEDER];
 
 urgent broadcast chan go;
 urgent chan recordOn, recordOff;
@@ -42,23 +35,7 @@ urgent chan recordOn, recordOff;
 //Sleeping time of the control and item feeder
 int sleep09 = 9; 
 int sleep05 = 5;  
-int sleep23 = 23; // Minimum delay between Item Arrival
-
-// Scheduling parameters (only used by process 0)
-//const int T[f_id] = {3};		// Periods 
-//const int D[f_id] = {3};
-//const int C[f_id] = {2};		// Execution times 
-
-const int MaxC  =  5;			// Maximum cputime used
-const int DELTA = -1;                   // Special CPU-time indicating a preemptable (almost) zero value
-const int INF   = -2;                   // Special value to be used by the IDLE process
-
-// Scheduling signals (initialized by Scheduler)
-// For proper use, see the Scheduler declarations
-
-int[INF,MaxC] need[p_id];             // CPU time needed  (set/reset by process, decremented by scheduler)
-bool           run[p_id];             // Run flag (set by scheduler, used as guard by process)
-</declaration>
+int sleep23 = 23; // Minimum delay between Item Arrival</declaration>
 	<template>
 		<name>Video</name>
 		<parameter>f_id feed_id</parameter>
@@ -169,72 +146,53 @@ clock y;        //from Sensor Breach
 
 //int ItemIdentified;
 </declaration>
-		<location id="id8" x="-306" y="-153">
-			<name x="-442" y="-178">RecordTermination</name>
-		</location>
-		<location id="id9" x="-306" y="-255">
-			<name x="-391" y="-280">Recording</name>
-			<label kind="invariant" x="-289" y="-272">x&lt;=sleep05</label>
-			<label kind="comments" x="-178" y="-272">Recording</label>
-		</location>
-		<location id="id10" x="-306" y="18">
-			<name x="-442" y="-8">SendIdentification</name>
-		</location>
-		<location id="id11" x="-306" y="77">
-			<name x="-289" y="69">EndLoop</name>
-			<urgent/>
-		</location>
-		<location id="id12" x="-306" y="-42">
-			<name x="-408" y="-67">ProcessVideo</name>
-		</location>
-		<location id="id13" x="-306" y="-93">
-			<name x="-399" y="-119">ReceiveData</name>
+		<location id="id8" x="-306" y="-118">
+			<name x="-442" y="-144">SendIdentification</name>
 			<committed/>
 		</location>
-		<location id="id14" x="-306" y="-322">
-			<name x="-416" y="-348">RecordRequest</name>
+		<location id="id9" x="-306" y="-59">
+			<name x="-289" y="-67">EndLoop</name>
+			<urgent/>
 		</location>
-		<location id="id15" x="-306" y="-425">
+		<location id="id10" x="-306" y="-178">
+			<name x="-408" y="-203">ProcessVideo</name>
+			<label kind="invariant" x="-289" y="-187">x&lt;5</label>
+		</location>
+		<location id="id11" x="-306" y="-237">
+			<name x="-399" y="-263">ReceiveData</name>
+			<committed/>
+		</location>
+		<location id="id12" x="-306" y="-322">
+			<name x="-365" y="-348">Record</name>
+			<label kind="invariant" x="-289" y="-331">x&lt;=sleep05</label>
+			<label kind="comments" x="-178" y="-331">sleep(0.5)</label>
+		</location>
+		<location id="id13" x="-306" y="-425">
 			<name x="-391" y="-450">preRecord</name>
 			<label kind="invariant" x="-289" y="-434">x&lt;=sleep09</label>
-			<label kind="comments" x="-178" y="-434">5 ds after object passed through sensor: 
-         allow record to start</label>
+			<label kind="comments" x="-178" y="-434">sleep(0.9)</label>
 		</location>
-		<location id="id16" x="-306" y="-612">
+		<location id="id14" x="-306" y="-612">
 			<name x="-289" y="-637">StartLoop</name>
 		</location>
-		<location id="id17" x="-306" y="-518">
+		<location id="id15" x="-306" y="-518">
 			<name x="-374" y="-544">Recive_S</name>
 			<label kind="comments" x="-178" y="-527">Item in Sensor Zone</label>
 		</location>
-		<init ref="id16"/>
+		<init ref="id14"/>
 		<transition>
 			<source ref="id8"/>
-			<target ref="id13"/>
-			<label kind="guard" x="-297" y="-144">need[feed_id]==0</label>
-			<label kind="synchronisation" x="-297" y="-127">go!</label>
-		</transition>
-		<transition>
-			<source ref="id14"/>
 			<target ref="id9"/>
-			<label kind="guard" x="-297" y="-314">need[feed_id]==0</label>
-			<label kind="synchronisation" x="-297" y="-297">go!</label>
+			<label kind="synchronisation" x="-297" y="-101">go!</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-297" y="35">go!</label>
+			<target ref="id8"/>
+			<label kind="guard" x="-297" y="-161">x==5</label>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id10"/>
-			<label kind="synchronisation" x="-297" y="-33">go!</label>
-			<label kind="assignment" x="-297" y="-17">need[feed_id]=5</label>
-			<label kind="comments" x="-178" y="-17">Process Video request</label>
-		</transition>
-		<transition>
-			<source ref="id17"/>
-			<target ref="id15"/>
+			<source ref="id15"/>
+			<target ref="id13"/>
 			<label kind="guard" x="-297" y="-501">not S[feed_id]</label>
 			<label kind="synchronisation" x="-297" y="-467">go!</label>
 			<label kind="assignment" x="-297" y="-484">x:=0</label>
@@ -243,36 +201,35 @@ clock y;        //from Sensor Breach
 [in Item referred to as t2]</label>
 		</transition>
 		<transition>
-			<source ref="id11"/>
-			<target ref="id16"/>
-			<nail x="-450" y="43"/>
+			<source ref="id9"/>
+			<target ref="id14"/>
+			<nail x="-450" y="-110"/>
 			<nail x="-450" y="-510"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-297" y="-221">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-297" y="-305">x==sleep05</label>
+			<label kind="assignment" x="-297" y="-288">x:=0, 
+R[feed_id]=false</label>
+			<label kind="comments" x="-178" y="-288">Record Off</label>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id12"/>
-		</transition>
-		<transition>
-			<source ref="id9"/>
-			<target ref="id8"/>
-			<label kind="guard" x="-297" y="-246">x==sleep05</label>
-			<label kind="assignment" x="-297" y="-229">x:=0, 
-R[feed_id]=false,
-need[feed_id]=1</label>
-			<label kind="comments" x="-178" y="-187">Record Termination Request</label>
-		</transition>
-		<transition>
-			<source ref="id15"/>
-			<target ref="id14"/>
 			<label kind="guard" x="-297" y="-408">x==sleep09</label>
 			<label kind="assignment" x="-297" y="-391">x:=0,
-R[feed_id]=true,
-need[feed_id]=1</label>
-			<label kind="comments" x="-178" y="-348">Record Request</label>
+R[feed_id]=true</label>
+			<label kind="comments" x="-178" y="-391">Record On</label>
 		</transition>
 		<transition>
-			<source ref="id16"/>
-			<target ref="id17"/>
+			<source ref="id14"/>
+			<target ref="id15"/>
 			<label kind="guard" x="-297" y="-595">S[feed_id]</label>
 			<label kind="synchronisation" x="-297" y="-561">go!</label>
 			<label kind="assignment" x="-297" y="-578">y:=0</label>
@@ -282,153 +239,40 @@ need[feed_id]=1</label>
 		</transition>
 	</template>
 	<template>
-		<name>Scheduler</name>
-		<declaration>clock x;        // Scheduler Clock
-p_id current;
-
-const int IDLE = N+1;
-
-void initialize()
-{
-    current = IDLE;
-    need[IDLE] = INF;
-    run[current] = true;
-}
-
-
-int maxprio()
-{
-    for(pid:p_id)
-    {
-        if(need[pid] != 0)
-            return pid;
-    }
-    return -1; //should not happen.
-}
-
-void decrement(p_id pid)
-{
-    if(need[pid] &gt; 0)
-        --need[pid];
-    //else need == DELTA or need == INF 
-}
-</declaration>
-		<location id="id18" x="-756" y="-408">
-			<label kind="comments" x="-731" y="-433">Introduce final state for 
-deadlock verification</label>
-		</location>
-		<location id="id19" x="-510" y="-493">
-			<name x="-493" y="-501">Reschedule</name>
-			<label kind="invariant" x="-520" y="-476">x&lt;1</label>
-			<label kind="comments" x="-527" y="-450">Invariant ensures that all 
-processes which are done
-are handled before a 
-reschedule is attempted.</label>
-			<committed/>
-		</location>
-		<location id="id20" x="-756" y="-663">
-			<committed/>
-		</location>
-		<location id="id21" x="-510" y="-663">
-			<name x="-493" y="-680">Run</name>
-			<label kind="invariant" x="-527" y="-646">x&lt;=1</label>
-		</location>
-		<location id="id22" x="-510" y="-731">
-			<name x="-544" y="-756">Init</name>
-			<label kind="invariant" x="-484" y="-739">x&lt;=4</label>
-			<committed/>
-		</location>
-		<init ref="id22"/>
-		<transition>
-			<source ref="id18"/>
-			<target ref="id18"/>
-			<nail x="-756" y="-357"/>
-			<nail x="-722" y="-357"/>
-		</transition>
-		<transition>
-			<source ref="id20"/>
-			<target ref="id18"/>
-			<label kind="guard" x="-748" y="-459">MAX_ITEMS&lt;=ITEM_COUNT</label>
-		</transition>
-		<transition>
-			<source ref="id20"/>
-			<target ref="id21"/>
-			<label kind="guard" x="-748" y="-756">need[current]!=0 and 
-MAX_ITEMS&gt;ITEM_COUNT</label>
-			<nail x="-757" y="-714"/>
-			<nail x="-587" y="-714"/>
-		</transition>
-		<transition>
-			<source ref="id19"/>
-			<target ref="id21"/>
-			<label kind="assignment" x="-476" y="-603">run[current] = false,
-current = maxprio(),
-run[current] = true</label>
-			<nail x="-484" y="-518"/>
-			<nail x="-484" y="-637"/>
-		</transition>
-		<transition>
-			<source ref="id21"/>
-			<target ref="id19"/>
-			<label kind="guard" x="-688" y="-595">maxprio() != current</label>
-			<label kind="synchronisation" x="-578" y="-578">go!</label>
-			<nail x="-544" y="-637"/>
-			<nail x="-544" y="-518"/>
-		</transition>
-		<transition>
-			<source ref="id20"/>
-			<target ref="id19"/>
-			<label kind="guard" x="-697" y="-518">need[current]==0</label>
-			<nail x="-714" y="-612"/>
-			<nail x="-714" y="-493"/>
-		</transition>
-		<transition>
-			<source ref="id21"/>
-			<target ref="id20"/>
-			<label kind="guard" x="-705" y="-680">x==1</label>
-			<label kind="assignment" x="-705" y="-663">x=0, decrement(current)</label>
-		</transition>
-		<transition>
-			<source ref="id22"/>
-			<target ref="id21"/>
-			<label kind="assignment" x="-501" y="-714">initialize()</label>
-		</transition>
-	</template>
-	<template>
 		<name>ItemFeeder</name>
 		<parameter>f_id feed_id</parameter>
 		<declaration>// Place local declarations here.
 clock x;        //per element clock
 </declaration>
-		<location id="id23" x="-136" y="-331">
+		<location id="id16" x="-136" y="-331">
 			<label kind="comments" x="-110" y="-348">Limit number of itterations for 
 simulation by creating a "deadend"</label>
 		</location>
-		<location id="id24" x="-136" y="-408">
-			<label kind="comments" x="-110" y="-493">P2: The minimum distance 
+		<location id="id17" x="-136" y="-408">
+			<label kind="comments" x="-144" y="-493">P2: The minimum distance 
       between item arrivals is 2.3 s</label>
 		</location>
-		<init ref="id24"/>
+		<init ref="id17"/>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id23"/>
+			<source ref="id16"/>
+			<target ref="id16"/>
 			<nail x="-170" y="-297"/>
 			<nail x="-136" y="-297"/>
 		</transition>
 		<transition>
-			<source ref="id24"/>
-			<target ref="id23"/>
+			<source ref="id17"/>
+			<target ref="id16"/>
 			<label kind="guard" x="-127" y="-374">MAX_ITEMS&lt;=ITEM_COUNT</label>
 		</transition>
 		<transition>
-			<source ref="id24"/>
-			<target ref="id24"/>
-			<label kind="guard" x="-85" y="-450">ITEM_COUNT==0 or 
-(x&gt;=sleep23 and MAX_ITEMS&gt;ITEM_COUNT)</label>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-85" y="-442">x&gt;=sleep23 and
+MAX_ITEMS&gt;ITEM_COUNT</label>
 			<label kind="synchronisation" x="-85" y="-408">ItemArrive[feed_id]!</label>
 			<label kind="assignment" x="-85" y="-391">x:=0</label>
 			<nail x="-93" y="-374"/>
-			<nail x="-93" y="-450"/>
+			<nail x="-93" y="-442"/>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
@@ -436,11 +280,11 @@ simulation by creating a "deadend"</label>
 //ItemFeeder0 = ItemFeeder(0);
 //ItemFeeder1 = ItemFeeder(1);
 // List one or more processes to be composed into a system.
-system Item, Controller, ItemFeeder,  Video, Scheduler;</system>
+system Item, Controller, ItemFeeder,  Video;</system>
 	<queries>
 		<query>
 			<formula>A[] not deadlock</formula>
-			<comment>Sanity check: system should not enter a (time-) deadlock</comment>
+			<comment></comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; Item(0,0).LeftVideoZone</formula>
@@ -499,18 +343,6 @@ system Item, Controller, ItemFeeder,  Video, Scheduler;</system>
 		</query>
 		<query>
 			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt; Controller(1).RecordRequest and need[0]&gt;=5</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt; Controller(1).RecordRequest and need[0]&lt;6</formula>
 			<comment></comment>
 		</query>
 	</queries>
