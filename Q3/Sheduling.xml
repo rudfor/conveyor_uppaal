@@ -230,6 +230,7 @@ clock y;        //from Sensor Breach
 			<target ref="id10"/>
 			<label kind="synchronisation" x="-297" y="-33">go!</label>
 			<label kind="assignment" x="-297" y="-17">need[feed_id]=5</label>
+			<label kind="comments" x="-178" y="-17">Process Video request</label>
 		</transition>
 		<transition>
 			<source ref="id17"/>
@@ -282,9 +283,7 @@ need[feed_id]=1</label>
 	</template>
 	<template>
 		<name>Scheduler</name>
-		<declaration>
-clock x;        // Scheduler Clock
-
+		<declaration>clock x;        // Scheduler Clock
 p_id current;
 
 const int IDLE = N+1;
@@ -314,51 +313,55 @@ void decrement(p_id pid)
     //else need == DELTA or need == INF 
 }
 </declaration>
-		<location id="id18" x="-994" y="-663">
+		<location id="id18" x="-756" y="-408">
+			<label kind="comments" x="-731" y="-433">Introduce final state for 
+deadlock verification</label>
 		</location>
 		<location id="id19" x="-510" y="-493">
-			<name x="-544" y="-459">Reschedule</name>
+			<name x="-493" y="-501">Reschedule</name>
 			<label kind="invariant" x="-520" y="-476">x&lt;1</label>
-			<label kind="comments" x="-688" y="-433">Invariant ensures that all processes which are done 
-are handled before a reschedule is attempted.</label>
+			<label kind="comments" x="-527" y="-450">Invariant ensures that all 
+processes which are done
+are handled before a 
+reschedule is attempted.</label>
 			<committed/>
 		</location>
-		<location id="id20" x="-773" y="-663">
+		<location id="id20" x="-756" y="-663">
 			<committed/>
 		</location>
 		<location id="id21" x="-510" y="-663">
-			<name x="-501" y="-689">Run</name>
+			<name x="-493" y="-680">Run</name>
 			<label kind="invariant" x="-527" y="-646">x&lt;=1</label>
 		</location>
-		<location id="id22" x="-510" y="-748">
-			<name x="-544" y="-773">Init</name>
-			<label kind="invariant" x="-484" y="-756">x&lt;=4</label>
+		<location id="id22" x="-510" y="-731">
+			<name x="-544" y="-756">Init</name>
+			<label kind="invariant" x="-484" y="-739">x&lt;=4</label>
 			<committed/>
 		</location>
 		<init ref="id22"/>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id18"/>
-			<nail x="-1054" y="-663"/>
-			<nail x="-1054" y="-629"/>
+			<nail x="-756" y="-357"/>
+			<nail x="-722" y="-357"/>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id18"/>
-			<label kind="guard" x="-977" y="-688">MAX_ITEMS&lt;=ITEM_COUNT</label>
+			<label kind="guard" x="-748" y="-459">MAX_ITEMS&lt;=ITEM_COUNT</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id21"/>
-			<label kind="guard" x="-765" y="-773">need[current]!=0 and 
+			<label kind="guard" x="-748" y="-756">need[current]!=0 and 
 MAX_ITEMS&gt;ITEM_COUNT</label>
-			<nail x="-774" y="-731"/>
-			<nail x="-587" y="-731"/>
+			<nail x="-757" y="-714"/>
+			<nail x="-587" y="-714"/>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id21"/>
-			<label kind="assignment" x="-467" y="-603">run[current] = false,
+			<label kind="assignment" x="-476" y="-603">run[current] = false,
 current = maxprio(),
 run[current] = true</label>
 			<nail x="-484" y="-518"/>
@@ -375,19 +378,20 @@ run[current] = true</label>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id19"/>
-			<label kind="guard" x="-756" y="-518">need[current]==0</label>
-			<nail x="-773" y="-493"/>
+			<label kind="guard" x="-697" y="-518">need[current]==0</label>
+			<nail x="-714" y="-612"/>
+			<nail x="-714" y="-493"/>
 		</transition>
 		<transition>
 			<source ref="id21"/>
 			<target ref="id20"/>
-			<label kind="guard" x="-739" y="-688">x==1</label>
-			<label kind="assignment" x="-739" y="-663">x=0, decrement(current)</label>
+			<label kind="guard" x="-705" y="-680">x==1</label>
+			<label kind="assignment" x="-705" y="-663">x=0, decrement(current)</label>
 		</transition>
 		<transition>
 			<source ref="id22"/>
 			<target ref="id21"/>
-			<label kind="assignment" x="-501" y="-722">initialize()</label>
+			<label kind="assignment" x="-501" y="-714">initialize()</label>
 		</transition>
 	</template>
 	<template>
