@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<times>
+<system>
+<declarations>
+<declaration name="mindelay" type="const" value="5"/>
+<declaration name="period" type="const" value="25"/>
+<declaration name="time" type="clock" value="0"/>
+</declarations>
+<process>
+<portcontainer>
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="40" w="200" x="120" y="70"/>
+<misc color="b6d2c2" id="1"/>
+</object>
+<label text="Process_1" x="135" y="79"/>
+<font name="SansSerif"/>
+</labelcontainer>
+</nailcontainer>
+</portcontainer>
+<misc parameters="mindelay, period" template="Template1"/>
+</process>
+</system>
+<tasktable>
+<task C="1" D="5" P="7" T="5" name="task1"/>
+<task C="3" D="25" P="4" T="25" behaviour="P" name="a"/>
+<task C="2" D="9" P="8" T="9" behaviour="P" name="b"/>
+<task C="4" D="40" P="2" T="40" behaviour="P" name="c"/>
+<task C="5" D="13" P="6" T="13" behaviour="P" name="d"/>
+</tasktable>
+<template>
+<name>Template1</name>
+<parameter>const d; const p</parameter>
+<declarations>
+<declaration name="x1" type="clock" value="0"/>
+<declaration name="x2" type="clock" value="0"/>
+</declarations>
+<location>
+<portcontainer>
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="60" w="100" x="120" y="60"/>
+<misc id="1"/>
+</object>
+<label text="Pause" x="152" y="75"/>
+<font name="SansSerif"/>
+</labelcontainer>
+</nailcontainer>
+</portcontainer>
+<misc initial="true"/>
+</location>
+<location>
+<portcontainer>
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="60" w="100" x="120" y="190"/>
+<misc id="3"/>
+</object>
+<label text="x1_last" x="147" y="201"/>
+<font name="SansSerif"/>
+</labelcontainer>
+</nailcontainer>
+</portcontainer>
+<misc tasktype="task1"/>
+</location>
+<transition>
+<edge fromport="3" fromvertex="1" toport="0" tovertex="3">
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="100" x="170" y="120"/>
+<misc id="4"/>
+</object>
+<label align="left" x="174" y="144"/>
+<font name="SansSerif"/>
+</labelcontainer>
+<nail cursor="12" id="0" x="167" y="117"/>
+<nail cursor="12" id="1" x="167" y="187"/>
+</nailcontainer>
+</edge>
+<metrics lx="174" ly="144" sx="174" sy="144"/>
+<misc assign="x1 := 0" showdetails="true"/>
+</transition>
+<location>
+<portcontainer>
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="60" w="100" x="360" y="190"/>
+<misc id="17"/>
+</object>
+<label text="x2_last" x="390" y="201"/>
+<font name="SansSerif"/>
+</labelcontainer>
+</nailcontainer>
+</portcontainer>
+<misc tasktype="task1"/>
+</location>
+<transition>
+<edge fromport="2" fromvertex="3" toport="1" tovertex="17">
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="30" w="140" x="220" y="190"/>
+<misc id="26"/>
+</object>
+<label align="left" x="255" y="157"/>
+<font name="SansSerif"/>
+</labelcontainer>
+<nail cursor="12" id="0" x="217" y="217"/>
+<nail cursor="12" id="1" x="257" y="187"/>
+<nail cursor="12" id="2" x="317" y="187"/>
+<nail cursor="12" id="3" x="357" y="217"/>
+</nailcontainer>
+</edge>
+<metrics lx="255" ly="157" sx="255" sy="157"/>
+<misc assign="x2 := 0" guard="x1&gt;=d, x2&gt;=p" showdetails="true"/>
+</transition>
+<transition>
+<edge fromport="1" fromvertex="17" toport="2" tovertex="3">
+<nailcontainer>
+<labelcontainer>
+<object>
+<metrics h="30" w="140" x="220" y="220"/>
+<misc id="27"/>
+</object>
+<label align="left" x="253" y="258"/>
+<font name="SansSerif"/>
+</labelcontainer>
+<nail cursor="12" id="0" x="357" y="217"/>
+<nail cursor="12" id="1" x="317" y="247"/>
+<nail cursor="12" id="2" x="257" y="247"/>
+<nail cursor="12" id="3" x="217" y="217"/>
+</nailcontainer>
+</edge>
+<metrics lx="253" ly="258" sx="253" sy="258"/>
+<misc assign="x1:=0" guard="x2&gt;=d, x1&gt;=p" showdetails="true"/>
+</transition>
+</template>
+</times>

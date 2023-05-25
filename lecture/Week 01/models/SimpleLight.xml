@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>//Insert declarations of global clocks, variables, constants and channels.
+
+chan On, Off;</declaration>
+	<template>
+		<name x="5" y="5">Controller</name>
+		<declaration>//Insert local declarations of clocks, variables and constants.
+</declaration>
+		<location id="id0" x="128" y="192">
+			<name x="72" y="152">LightOff</name>
+		</location>
+		<location id="id1" x="320" y="192">
+			<name x="320" y="152">LightOn</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="216" y="104">On?</label>
+			<nail x="160" y="128"/>
+			<nail x="288" y="128"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="216" y="264">Off?</label>
+			<nail x="288" y="256"/>
+			<nail x="160" y="256"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="32" y="224">Off?</label>
+			<nail x="96" y="256"/>
+			<nail x="56" y="216"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="384" y="232">On?</label>
+			<nail x="352" y="256"/>
+			<nail x="392" y="216"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Person</name>
+		<location id="id2" x="162" y="158">
+			<name x="184" y="144">Operate</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="152" y="72">On!</label>
+			<nail x="128" y="96"/>
+			<nail x="192" y="96"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="144" y="232">Off!</label>
+			<nail x="192" y="224"/>
+			<nail x="128" y="224"/>
+		</transition>
+	</template>
+	<system>//Insert process assignments.
+
+//Edit system definition.
+system Controller, Person;</system>
+	<queries>
+		<query>
+			<formula>Controller.LightOff --&gt; Controller.LightOn</formula>
+			<comment>Will the light always come back?</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Controller.LightOn</formula>
+			<comment>Is it possible to get light?</comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>Is it true that the system cannot get stuck?</comment>
+		</query>
+	</queries>
+</nta>

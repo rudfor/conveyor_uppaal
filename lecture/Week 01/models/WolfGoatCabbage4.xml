@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>/* Channels used to get Passengers (Wolf, Goat or Cabbage) across the river */
+
+typedef int[0,2] Item;
+
+const int wolf = 0;
+const int goat = 1;
+const int cabbage = 2;
+
+chan BringToA[Item], BringToB[Item];
+</declaration>
+	<template>
+		<name x="5" y="5">Man</name>
+		<declaration>//Insert local declarations of clocks, variables and constants.
+
+bool onA[Item] = {true, true, true};
+
+/* Define safe shore */
+bool safeShore(bool w, bool g, bool c) { return not( (w and g) or (g and c) ); }
+
+/* Check that the shore left would still be safe */
+bool safeToA(Item i) { return safeShore( not onA[wolf] and not (i==wolf), not onA[goat] and not (i==goat), not onA[cabbage] and not (i==cabbage) ); } 
+
+bool safeToB(Item i) { return safeShore( onA[wolf] and not (i==wolf), onA[goat] and not (i==goat), onA[cabbage] and not (i==cabbage) ); } 
+
+/* Define sensible moves (stay safe and make progress) */
+
+bool okLeaveA() { return safeShore(onA[wolf], onA[goat], onA[cabbage]) and false; }       // Never leave shore A without a passenger
+
+bool okLeaveB() { return safeShore(not onA[wolf], not onA[goat], not onA[cabbage]); }
+
+bool okToA(Item i) { return safeToA(i) and (i==goat) and (onA[wolf]!=onA[cabbage]); }     // Only bring back the goat and only in the middle phase
+
+bool okToB(Item i) { return safeToB(i) and ((i==goat) imply (onA[wolf]==onA[cabbage])); } // Only bring the goat first and last</declaration>
+		<location id="id0" x="64" y="224">
+			<name x="0" y="216">ShoreA</name>
+			<urgent/>
+		</location>
+		<location id="id1" x="224" y="224">
+			<name x="248" y="216">ShoreB</name>
+			<urgent/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="104" y="200">okLeaveB()</label>
+			<nail x="184" y="192"/>
+			<nail x="96" y="192"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="104" y="232">okLeaveA()</label>
+			<nail x="96" y="256"/>
+			<nail x="192" y="256"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="select" x="-32" y="72">who : Item</label>
+			<label kind="guard" x="16" y="104">okToA(who)</label>
+			<label kind="synchronisation" x="96" y="128">BringToA[who]!</label>
+			<label kind="assignment" x="168" y="104">onA[who] = true</label>
+			<nail x="192" y="160"/>
+			<nail x="96" y="160"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="select" x="-32" y="344">who : Item</label>
+			<label kind="guard" x="24" y="320">okToB(who)</label>
+			<label kind="synchronisation" x="96" y="296">BringToB[who]!</label>
+			<label kind="assignment" x="160" y="320">onA[who] = false</label>
+			<nail x="96" y="288"/>
+			<nail x="192" y="288"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Passenger</name>
+		<parameter>chan &amp;BringToA, chan &amp;BringToB</parameter>
+		<declaration>//Insert local declarations of clocks, variables and constants.
+</declaration>
+		<location id="id2" x="64" y="224">
+			<name x="-8" y="216">ShoreA</name>
+		</location>
+		<location id="id3" x="224" y="224">
+			<name x="248" y="216">ShoreB</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="112" y="168">BringToA?</label>
+			<nail x="192" y="192"/>
+			<nail x="96" y="192"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="112" y="264">BringToB?</label>
+			<nail x="96" y="256"/>
+			<nail x="192" y="256"/>
+		</transition>
+	</template>
+	<system>//Insert process assignments.
+
+Wolf    = Passenger(BringToA[wolf], BringToB[wolf]);
+Goat    = Passenger(BringToA[goat], BringToB[goat]);
+Cabbage = Passenger(BringToA[cabbage], BringToB[cabbage]);
+
+//Edit system definition.
+system Man, Wolf, Goat, Cabbage;</system>
+	<queries>
+		<query>
+			<formula>A[] (Wolf.ShoreA == Goat.ShoreA imply Goat.ShoreA == Man.ShoreA) and 
+    (Cabbage.ShoreA == Goat.ShoreA imply Goat.ShoreA == Man.ShoreA)</formula>
+			<comment>All states are safe </comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Wolf.ShoreB and Goat.ShoreB and Cabbage.ShoreB and Man.ShoreB</formula>
+			<comment>Eventually everybody gets across the river.</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Wolf.ShoreB and Goat.ShoreB and Cabbage.ShoreB and Man.ShoreB</formula>
+			<comment>Is it possible to get everybody across the river?</comment>
+		</query>
+	</queries>
+</nta>

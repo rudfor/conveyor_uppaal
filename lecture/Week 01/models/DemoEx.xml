@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+chan c;
+
+const int limit = 10;
+
+</declaration>
+	<template>
+		<name x="5" y="5">P1</name>
+		<declaration>// Place local declarations here.
+
+int x;</declaration>
+		<location id="id0" x="-136" y="-238">
+		</location>
+		<location id="id1" x="-136" y="-408">
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<nail x="-204" y="-323"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="select" x="-119" y="-382">s : int[1,4]</label>
+			<label kind="guard" x="-119" y="-348">x &lt;= limit</label>
+			<label kind="synchronisation" x="-119" y="-314">c?</label>
+			<label kind="assignment" x="-119" y="-280">x = x+s</label>
+		</transition>
+	</template>
+	<template>
+		<name>P0</name>
+		<location id="id2" x="-170" y="-170">
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-59" y="-178">c!</label>
+			<nail x="-68" y="-238"/>
+			<nail x="-68" y="-102"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+
+// List one or more processes to be composed into a system.
+system P0, P1;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

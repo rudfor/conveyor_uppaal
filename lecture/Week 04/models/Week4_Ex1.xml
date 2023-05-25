@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock time;
+
+urgent chan uc;
+
+broadcast chan bc;</declaration>
+	<template>
+		<name x="5" y="5">UrgentLoc</name>
+		<declaration>// Place local declarations here.
+clock x;</declaration>
+		<location id="id0" x="-96" y="-128">
+			<name x="-104" y="-160">B</name>
+		</location>
+		<location id="id1" x="-256" y="-128">
+			<name x="-264" y="-160">A</name>
+			<urgent/>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+		</transition>
+	</template>
+	<template>
+		<name>UrgentChan</name>
+		<location id="id2" x="96" y="-96">
+			<name x="88" y="-128">B</name>
+		</location>
+		<location id="id3" x="-64" y="-96">
+			<name x="-72" y="-128">A</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="0" y="-128">uc!</label>
+		</transition>
+	</template>
+	<template>
+		<name>TimedReceiver</name>
+		<parameter>int start, int end</parameter>
+		<declaration>clock x;
+</declaration>
+		<location id="id4" x="256" y="0">
+			<name x="240" y="-40">C</name>
+		</location>
+		<location id="id5" x="128" y="0">
+			<name x="120" y="-40">B</name>
+			<label kind="invariant" x="56" y="16">x &lt;= end</label>
+		</location>
+		<location id="id6" x="128" y="96">
+			<name x="144" y="72">D</name>
+		</location>
+		<location id="id7" x="0" y="0">
+			<name x="-8" y="-40">A</name>
+			<label kind="invariant" x="-96" y="-8">x &lt;= start</label>
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="160" y="-24">x == end</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="120" y="-88">uc?</label>
+			<nail x="160" y="-64"/>
+			<nail x="96" y="-64"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="guard" x="24" y="-24">x == start</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="136" y="40">bc?</label>
+		</transition>
+	</template>
+	<template>
+		<name>CommittedLoc</name>
+		<location id="id8" x="64" y="0">
+			<name x="56" y="-32">B</name>
+		</location>
+		<location id="id9" x="-96" y="0">
+			<name x="-104" y="-32">A</name>
+			<committed/>
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+		</transition>
+	</template>
+	<template>
+		<name>Broadcaster</name>
+		<declaration>clock x;</declaration>
+		<location id="id10" x="128" y="0">
+		</location>
+		<location id="id11" x="0" y="0">
+			<label kind="invariant" x="-24" y="24">x &lt;= 4</label>
+		</location>
+		<init ref="id11"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="guard" x="32" y="-48">x &gt;= 3</label>
+			<label kind="synchronisation" x="48" y="-24">bc!</label>
+		</transition>
+	</template>
+	<template>
+		<name>Timelock</name>
+		<declaration>clock x;</declaration>
+		<location id="id12" x="0" y="0">
+			<label kind="invariant" x="-24" y="24">x &lt;= 10</label>
+		</location>
+		<init ref="id12"/>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<nail x="32" y="-64"/>
+			<nail x="-32" y="-64"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+R1 = TimedReceiver(2,3);
+R2 = TimedReceiver(2,5);
+R3 = TimedReceiver(6,8);
+
+// List one or more processes to be composed into a system.
+system UrgentLoc, UrgentChan, CommittedLoc, R1, R2, R3, Broadcaster, Timelock;
+</system>
+	<queries>
+		<query>
+			<formula>A[] !deadlock
+			</formula>
+			<comment>No deadlocks (some non-time transition is always possible -- here in Timelock)
+			</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; time &gt; 5
+			</formula>
+			<comment>No time-lock in the beginning? (Fails because of possible zeno behaviour in Timelock)</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; time &gt; 5
+			</formula>
+			<comment>May time progress at all?
+			</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; time &gt; 100
+			</formula>
+			<comment>Does time diverge? (100 is considered infinite here.)
+			</comment>
+		</query>
+		<query>
+			<formula>A[] UrgentLoc.A imply time == 0
+			</formula>
+			<comment>Time cannot pass at an urgent location
+			</comment>
+		</query>
+		<query>
+			<formula>A[] CommittedLoc.A imply time == 0
+			</formula>
+			<comment>Time cannot progress at a comitted location
+			</comment>
+		</query>
+		<query>
+			<formula>A[] CommittedLoc.A imply UrgentLoc.A
+			</formula>
+			<comment>Commitment is stronger than urgency
+			</comment>
+		</query>
+		<query>
+			<formula>A[] time &lt; 2 imply UrgentChan.A
+			</formula>
+			<comment>No communcation the urgent channel until some receiver is ready.
+			</comment>
+		</query>
+		<query>
+			<formula>A[] time &gt; 2 imply UrgentChan.B
+			</formula>
+			<comment>Once some receiver is enabled, communcation on the urgent channel must take place
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; R1.D
+			</formula>
+			<comment>R1 may detect broadast between 3 and 4
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not R1.D and time &gt; 4
+			</formula>
+			<comment>R1 may miss broadcast between 3 and 4
+			</comment>
+		</query>
+		<query>
+			<formula>A[] time &gt; 4 imply R2.D
+			</formula>
+			<comment>R2 always detects the the broadast between 3 and 4
+			</comment>
+		</query>
+		<query>
+			<formula>A[] not R3.D
+			</formula>
+			<comment>R3 never detects broadcast between 3 and 4
+			</comment>
+		</query>
+	</queries>
+</nta>

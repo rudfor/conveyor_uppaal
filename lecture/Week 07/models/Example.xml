@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<times>
+<system>
+<declarations/>
+</system>
+<tasktable schedulingpolicy="RM">
+<task C="10" D="50" P="4" T="50" behaviour="P" name="task1"/>
+<task C="15" D="70" P="3" T="70" behaviour="P" name="task2"/>
+<task C="40" D="110" P="2" T="110" behaviour="P" name="task3"/>
+<task C="30" D="200" P="1" T="200" behaviour="P" name="task4"/>
+</tasktable>
+</times>
